@@ -1,7 +1,8 @@
-import { SessionProvider } from 'next-auth/react';
-import { MantineProvider } from '@mantine/core';
+import { SessionProvider } from "next-auth/react";
+import { MantineProvider } from "@mantine/core";
 
 import { AppProps } from "next/app";
+import Layout from "../components/Layout";
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
@@ -11,10 +12,12 @@ const App = ({ Component, pageProps }: AppProps) => {
         withNormalizeCSS
         theme={{
           /** Put your mantine theme override here */
-          colorScheme: 'light',
+          colorScheme: "light",
         }}
       >
-      <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </MantineProvider>
     </SessionProvider>
   );
