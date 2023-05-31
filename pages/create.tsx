@@ -12,7 +12,6 @@ import Router from "next/router";
 import React from "react";
 
 const Draft: React.FC = () => {
-
   const form = useForm({
     initialValues: {
       title: "",
@@ -31,7 +30,6 @@ const Draft: React.FC = () => {
     content: string;
     immediatelyPublish: boolean;
   }) => {
-    console.log(formData);
     try {
       await fetch("/api/post", {
         method: "POST",
@@ -53,7 +51,7 @@ const Draft: React.FC = () => {
   };
 
   return (
-    <Box maw={600} mx="auto">
+    <>
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
         <Title order={2}>New Post</Title>
         <TextInput
@@ -79,7 +77,7 @@ const Draft: React.FC = () => {
           <Button type="submit">Create</Button>
         </Group>
       </form>
-    </Box>
+    </>
   );
 };
 

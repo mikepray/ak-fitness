@@ -1,9 +1,8 @@
-import React from "react";
+import { Box, Flex, Stack, Title, Text, Container } from "@mantine/core";
 import { GetStaticProps } from "next";
-import Layout from "../components/Layout";
+import React from "react";
 import Post, { PostProps } from "../components/Post";
 import prisma from "../lib/prisma";
-import { Stack, Title } from "@mantine/core";
 
 export const getStaticProps: GetStaticProps = async () => {
   const feed = await prisma.post.findMany({
@@ -29,11 +28,14 @@ const Blog: React.FC<Props> = (props) => {
     <>
       <Title p="md">Welcome to AK Fitness</Title>
       <Stack spacing="md">
-      {props.feed.map((post) => (
-        <div key={post.id}>
-          <Post post={post} />
-        </div>
-      ))}
+        {props.feed.map((post) => (
+          <div key={post.id}>
+            <Post post={post} />
+          </div>
+        ))}
+        {props.feed.length === 0 && (
+          <Text c="dimmed">There aren't any posts yet...</Text>
+        )}
       </Stack>
     </>
   );

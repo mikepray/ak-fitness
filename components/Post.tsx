@@ -1,7 +1,7 @@
+import { Group, Paper, Stack, Text, Title } from "@mantine/core";
 import React from "react";
-import Router from "next/router";
 import ReactMarkdown from "react-markdown";
-import { Paper, Title, Text } from "@mantine/core";
+import { AdminPostActions } from "./AdminPostActions";
 
 export type PostProps = {
   id: string;
@@ -18,11 +18,24 @@ const Post: React.FC<{ post: PostProps }> = ({ post }) => {
   const authorName = post.author ? post.author.name : "Unknown author";
   return (
     <Paper shadow="md" p="md" withBorder>
-      <Title order={2}>{post.title}</Title>
-      <Text>By {authorName}</Text>
-      <ReactMarkdown children={post.content} />
+      <Group position="apart">
+        <Title order={2}>{post.title}</Title>
+        <AdminPostActions
+          id={post.id}
+          published={post.published}
+          routeAfterAction={{
+            onPublish: `/`,
+            onUnpublish: `/drafts`,
+            onDelete: `/${post.published ? "/" : "/drafts"}`,
+          }}
+        />
+      </Group>
+      <Stack>
+        <Text c="dimmed">By {authorName}</Text>
+        <ReactMarkdown children={post.content} />
+      </Stack>
     </Paper>
-  )
+  );
 };
 
 export default Post;

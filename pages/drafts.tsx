@@ -1,15 +1,14 @@
 // pages/drafts.tsx
 
-import React from "react";
+import { Alert, Box, Flex, Stack, Title } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
-import { useSession, getSession } from "next-auth/react";
-import Layout from "../components/Layout";
+import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
+import React from "react";
 import Post, { PostProps } from "../components/Post";
 import prisma from "../lib/prisma";
-import { getServerSession } from "next-auth";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
-import { Alert, Stack, Title } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
