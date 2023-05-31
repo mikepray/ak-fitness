@@ -1,8 +1,3 @@
-// pages/create.tsx
-
-import React, { useState } from "react";
-import Layout from "../components/Layout";
-import Router from "next/router";
 import {
   Box,
   Button,
@@ -13,10 +8,11 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import Router from "next/router";
+import React from "react";
 
 const Draft: React.FC = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+
   const form = useForm({
     initialValues: {
       title: "",

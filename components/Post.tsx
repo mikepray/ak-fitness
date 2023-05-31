@@ -17,7 +17,7 @@ export type PostProps = {
 const Post: React.FC<{ post: PostProps }> = ({ post }) => {
   const authorName = post.author ? post.author.name : "Unknown author";
   return (
-    <Paper shadow="md" p="md">
+    <Paper shadow="md" p="md" withBorder>
       <Title order={2}>{post.title}</Title>
       <Text>By {authorName}</Text>
       <ReactMarkdown children={post.content} />

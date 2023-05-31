@@ -3,7 +3,7 @@ import { GetStaticProps } from "next";
 import Layout from "../components/Layout";
 import Post, { PostProps } from "../components/Post";
 import prisma from "../lib/prisma";
-import { Title } from "@mantine/core";
+import { Stack, Title } from "@mantine/core";
 
 export const getStaticProps: GetStaticProps = async () => {
   const feed = await prisma.post.findMany({
@@ -27,12 +27,14 @@ type Props = {
 const Blog: React.FC<Props> = (props) => {
   return (
     <>
-      <Title>AK Fitness Posts</Title>
+      <Title p="md">Welcome to AK Fitness</Title>
+      <Stack spacing="md">
       {props.feed.map((post) => (
         <div key={post.id}>
           <Post post={post} />
         </div>
       ))}
+      </Stack>
     </>
   );
 };

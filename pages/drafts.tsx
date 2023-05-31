@@ -8,7 +8,7 @@ import Post, { PostProps } from "../components/Post";
 import prisma from "../lib/prisma";
 import { getServerSession } from "next-auth";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
-import { Alert, Title } from "@mantine/core";
+import { Alert, Stack, Title } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -58,15 +58,19 @@ const Drafts: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Title>Your Drafts</Title>
-
-      {props.drafts.map((post) => (
-        <div key={post.id} className="post">
-          <Post post={post} />
-        </div>
-      ))}
-      {props.drafts.length === 0 &&
-      <Alert color="blue" variant="light">There are no drafts. Click Create Post to create a draft</Alert>}
+      <Title p="md">Your Drafts</Title>
+      <Stack spacing="md">
+        {props.drafts.map((post) => (
+          <div key={post.id} className="post">
+            <Post post={post} />
+          </div>
+        ))}
+        {props.drafts.length === 0 && (
+          <Alert color="blue" variant="light">
+            There are no drafts. Click Create Post to create a draft
+          </Alert>
+        )}
+      </Stack>
     </>
   );
 };
