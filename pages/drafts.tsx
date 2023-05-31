@@ -1,15 +1,17 @@
 // pages/drafts.tsx
 
-import React from 'react';
-import { GetServerSideProps } from 'next';
-import { useSession, getSession } from 'next-auth/react';
-import Layout from '../components/Layout';
-import Post, { PostProps } from '../components/Post';
-import prisma from '../lib/prisma';
-import { getServerSession } from 'next-auth';
-import { nextAuthOptions } from './api/auth/[...nextauth]';
+import React from "react";
+import { GetServerSideProps } from "next";
+import { useSession, getSession } from "next-auth/react";
+import Layout from "../components/Layout";
+import Post, { PostProps } from "../components/Post";
+import prisma from "../lib/prisma";
+import { getServerSession } from "next-auth";
+import { nextAuthOptions } from "./api/auth/[...nextauth]";
+import { Alert, Title } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 
-export const getServerSideProps: GetServerSideProps = async ({req, res}) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
   if (!session) {
     res.statusCode = 403;
@@ -41,26 +43,31 @@ const Drafts: React.FC<Props> = (props) => {
 
   if (!session) {
     return (
-      <Layout>
-        <h1>My Drafts</h1>
-        <div>You need to be authenticated to view this page.</div>
-      </Layout>
+      <>
+        <Title>Your Drafts</Title>
+        <Alert
+          icon={<IconAlertCircle size="1rem" />}
+          color="red"
+          variant="filled"
+        >
+          You need to be authenticated to view this page
+        </Alert>
+      </>
     );
   }
 
   return (
-    <Layout>
-      <div className="page">
-        <h1>My Drafts</h1>
-        <main>
-          {props.drafts.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
-      </div>
-    </Layout>
+    <>
+      <Title>Your Drafts</Title>
+
+      {props.drafts.map((post) => (
+        <div key={post.id} className="post">
+          <Post post={post} />
+        </div>
+      ))}
+      {props.drafts.length === 0 &&
+      <Alert color="blue" variant="light">There are no drafts. Click Create Post to create a draft</Alert>}
+    </>
   );
 };
 

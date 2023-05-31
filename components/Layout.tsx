@@ -31,6 +31,9 @@ const Layout: React.FC<Props> = (props) => {
     <>
       <AppShell
         padding="md"
+        styles={(theme) => ({
+          main: { backgroundColor: theme.colors.dark[8] }
+        })}
         header={
           <Header height={60} p="xs">
             <Group position="apart">

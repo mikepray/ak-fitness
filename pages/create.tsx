@@ -1,82 +1,89 @@
 // pages/create.tsx
 
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
-import Router from 'next/router';
+import React, { useState } from "react";
+import Layout from "../components/Layout";
+import Router from "next/router";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Group,
+  TextInput,
+  Textarea,
+  Title,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 
 const Draft: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const form = useForm({
+    initialValues: {
+      title: "",
+      content: "",
+      immediatelyPublish: false,
+    },
+    validate: {
+      title: (value) => (value.length > 0 ? null : "Title is required"),
+      content: (value) =>
+        value.length > 0 ? null : "Post content is required",
+    },
+  });
 
-  const submitData = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const submitData = async (formData: {
+    title: string;
+    content: string;
+    immediatelyPublish: boolean;
+  }) => {
+    console.log(formData);
     try {
-      const body = { title, content };
-      await fetch('/api/post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      await fetch("/api/post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+          published: formData.immediatelyPublish,
+        }),
       });
-      await Router.push('/drafts');
+      if (formData.immediatelyPublish) {
+        await Router.push("/");
+      } else {
+        await Router.push("/drafts");
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <Layout>
-      <div>
-        <form onSubmit={submitData}>
-          <h1>New Draft</h1>
-          <input
-            autoFocus
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Title"
-            type="text"
-            value={title}
+    <Box maw={600} mx="auto">
+      <form onSubmit={form.onSubmit((values) => submitData(values))}>
+        <Title order={2}>New Post</Title>
+        <TextInput
+          withAsterisk
+          label="Title"
+          placeholder="Title"
+          {...form.getInputProps("title")}
+        />
+        <Textarea
+          label="Content"
+          placeholder="Content"
+          withAsterisk
+          minRows={10}
+          {...form.getInputProps("content")}
+        />
+        <Group mt="md">
+          <Checkbox
+            label="Immediately Publish?"
+            {...form.getInputProps("immediatelyPublish")}
           />
-          <textarea
-            cols={50}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Content"
-            rows={8}
-            value={content}
-          />
-          <input disabled={!content || !title} type="submit" value="Create" />
-          <a className="back" href="#" onClick={() => Router.push('/')}>
-            or Cancel
-          </a>
-        </form>
-      </div>
-      <style jsx>{`
-        .page {
-          background: var(--geist-background);
-          padding: 3rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        input[type='text'],
-        textarea {
-          width: 100%;
-          padding: 0.5rem;
-          margin: 0.5rem 0;
-          border-radius: 0.25rem;
-          border: 0.125rem solid rgba(0, 0, 0, 0.2);
-        }
-
-        input[type='submit'] {
-          background: #ececec;
-          border: 0;
-          padding: 1rem 2rem;
-        }
-
-        .back {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </Layout>
+        </Group>
+        <Group position="right" mt="md">
+          <Button type="submit">Create</Button>
+        </Group>
+      </form>
+    </Box>
   );
 };
 
