@@ -38,9 +38,9 @@ type Props = {
 };
 
 const Drafts: React.FC<Props> = (props) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  if (!session) {
+  if (!session && status !== 'loading') {
     return (
       <>
         <Title>Your Drafts</Title>

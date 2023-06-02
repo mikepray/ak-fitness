@@ -31,7 +31,7 @@ export const AdminPostActions: React.FC<{ id: string, published: boolean, routeA
         <Flex gap="sm" justify="flex-end" align="flex-center">
           {session && published && (
             <Button 
-            variant="light" 
+            variant="default" 
             compact
             onClick={() => unpublishPost(id, routeAfterAction.onUnpublish)}
             >

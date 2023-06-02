@@ -1,10 +1,8 @@
-import React, { ReactNode, useState } from "react";
 import {
   Anchor,
   AppShell,
   Box,
   Burger,
-  Button,
   Center,
   Container,
   Flex,
@@ -15,14 +13,14 @@ import {
   Navbar,
   Stack,
   Text,
-  ThemeIcon,
   Title,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
+import { IconBarbell } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { IconBarbell } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
+import React, { ReactNode, useState } from "react";
+import { useGetMe } from "../hooks/useGetMe";
 
 type Props = {
   children: ReactNode;
@@ -32,11 +30,11 @@ const Layout: React.FC<Props> = (props) => {
   const router = useRouter();
   const isActive: (pathname: string) => boolean = (pathname) =>
     router.pathname === pathname;
-
+  const me = useGetMe();  
   const { data: session, status } = useSession();
   const [opened, setOpened] = useState(false);
-
   const label = opened ? "Close navigation" : "Open navigation";
+
   return (
     <>
       <AppShell
@@ -46,44 +44,53 @@ const Layout: React.FC<Props> = (props) => {
         })}
         navbar={
           <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-
-          <Navbar
-            p="md"
-            hidden={!opened}
-            width={{ sm: 200, xs:200}}
-          >
-            <Stack>
-              <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
-                Feed
-              </Anchor>
-              {session && (
-                <>
-                  <Anchor
-                    href="/drafts"
-                    weight={isActive("/drafts") ? "bold" : "normal"}
-                  >
-                    Drafts
-                  </Anchor>
-                  <Anchor
-                    href="/create"
-                    weight={isActive("/create") ? "bold" : "normal"}
-                  >
-                    Create Post
-                  </Anchor>
-                </>
-              )}
-              {status === "loading" && <Loader />}
-              {session && <Text>Welcome, {session?.user.name}</Text>}
-              {status !== "loading" && !session && (
-                <Anchor href="/api/auth/signin">Log in</Anchor>
-              )}
-              {session && (
-                <UnstyledButton onClick={() => signOut()}>
-                  <Anchor>Log Out</Anchor>
-                </UnstyledButton>
-              )}
-            </Stack>
-          </Navbar>
+            <Navbar p="md" hidden={!opened}>
+              <Stack>
+                <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
+                  Feed
+                </Anchor>
+                {session && (
+                  <>
+                    <Anchor
+                      href="/drafts"
+                      weight={isActive("/drafts") ? "bold" : "normal"}
+                    >
+                      Drafts
+                    </Anchor>
+                    <Anchor
+                      href="/create"
+                      weight={isActive("/create") ? "bold" : "normal"}
+                    >
+                      Create Post
+                    </Anchor>
+                    <Anchor
+                      href="/workspaces"
+                      weight={isActive("/workspaces") ? "bold" : "normal"}
+                    >
+                      Workspaces
+                    </Anchor>
+                    {me?.isGlobalAdmin && (
+                       <Anchor
+                       href="/admin"
+                       weight={isActive("/admin") ? "bold" : "normal"}
+                     >
+                       Application Admin
+                     </Anchor>
+                    )}
+                  </>
+                )}
+                {status === "loading" && <Loader />}
+                {session && <Text>Welcome, {session?.user.name}</Text>}
+                {status !== "loading" && !session && (
+                  <Anchor href="/api/auth/signin">Log in</Anchor>
+                )}
+                {session && (
+                  <UnstyledButton onClick={() => signOut()}>
+                    <Anchor>Log Out</Anchor>
+                  </UnstyledButton>
+                )}
+              </Stack>
+            </Navbar>
           </MediaQuery>
         }
         header={
@@ -105,26 +112,41 @@ const Layout: React.FC<Props> = (props) => {
                     <IconBarbell />
                   </Center>
                   <Title order={3}>AK Fitness</Title>
+                  <Group mt={5}>
                   <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
-                Feed
-              </Anchor>
-              {session && (
-                <>
-                  <Anchor
-                    href="/drafts"
-                    weight={isActive("/drafts") ? "bold" : "normal"}
-                  >
-                    Drafts
+                    Feed
                   </Anchor>
-                  <Anchor
-                    href="/create"
-                    weight={isActive("/create") ? "bold" : "normal"}
-                  >
-                    Create Post
-                  </Anchor>
-                </>
-              )}
-              
+                  {session && (
+                    <>
+                      <Anchor
+                        href="/drafts"
+                        weight={isActive("/drafts") ? "bold" : "normal"}
+                      >
+                        Drafts
+                      </Anchor>
+                      <Anchor
+                        href="/create"
+                        weight={isActive("/create") ? "bold" : "normal"}
+                      >
+                        Create Post
+                      </Anchor>
+                      <Anchor
+                      href="/workspaces"
+                      weight={isActive("/workspaces") ? "bold" : "normal"}
+                    >
+                      Workspaces
+                    </Anchor>
+                      {me?.isGlobalAdmin && (
+                       <Anchor
+                       href="/admin"
+                       weight={isActive("/admin") ? "bold" : "normal"}
+                     >
+                       Application Admin
+                     </Anchor>
+                    )}
+                    </>
+                  )}
+                  </Group>
                 </Group>
                 <Flex align="flex-end" gap="sm">
                   {status === "loading" && <Loader />}

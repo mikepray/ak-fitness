@@ -12,6 +12,76 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
+model Workspace {
+  id                String  @id @default(cuid())
+  canUsersRegister  Boolean
+  name              String?
+  description       String?
+  workspaceUsers    WorkspaceUser[]
+}
+
+model WorkspaceUser {
+  id                String  @id @default(cuid())
+  workspaceId       String
+  workspace         Workspace @relation(fields:[workspaceId], references:[id])
+  userId            String   
+  user              User @relation(fields:[userId], references:[id])
+  isUserEnabled     Boolean @default(true)
+  isWorkspaceAdmin  Boolean @default(false)
+}
+
+model User {
+  id              String    @id @default(cuid())
+  isGlobalAdmin   Boolean   @default(false)
+  name            String?
+  email           String?@unique
+  emailVerified   DateTime?
+  image           String?
+  posts           Post[]
+  accounts        Account[]
+  sessions        Session[]
+  workoutUsers    WorkoutUser[]
+  workspaceUsers  WorkspaceUser[]
+}
+
+model WorkoutUser {
+  id              String    @id @default(cuid())
+  workoutId       String
+  workout         Workout   @relation(fields:[workoutId], references:[id])
+  userId          String
+  user            User   @relation(fields:[userId], references:[id])
+}
+
+model Workout {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  tags              String?
+  workoutExercises  WorkoutExercise[]
+  workoutUsers      WorkoutUser[]
+}
+
+model Exercise {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  tags              String?
+  type              String?
+  equipmentRequired String?
+  workoutExercises  WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id                String    @id @default(cuid())
+  workout           Workout   @relation(fields:[workoutId], references:[id])
+  workoutId         String
+  exercise          Exercise   @relation(fields:[exerciseId], references:[id])
+  exerciseId        String
+  sets              String?
+  reps              String?
+  restSeconds       String?
+}
+
 model Post {
   id        String  @id @default(cuid())
   title     String
@@ -21,6 +91,7 @@ model Post {
   authorId  String?
 }
 
+// Tables for NextAuth authn
 model Account {
   id                 String  @id @default(cuid())
   userId             String  @map("user_id")
@@ -48,17 +119,6 @@ model Session {
   userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields:[userId], references:[id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?@unique
-  emailVerified DateTime?
-  image         String?
-  posts         Post[]
-  accounts      Account[]
-  sessions      Session[]
 }
 
 model VerificationToken {

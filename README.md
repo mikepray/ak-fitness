@@ -1,6 +1,8 @@
-# Fullstack Authentication Example with Next.js and NextAuth.js
+# fitness app for clients
 
-This is the starter project for the fullstack tutorial with Next.js and Prisma. You can find the final version of this project in the [`final`](https://github.com/prisma/blogr-nextjs-prisma/tree/final) branch of this repo.
+a webapp for fitness trainers to build workouts for clients. 
+
+built on nextjs, prisma, postgres, and running on vercel
 
 ## Building
 
@@ -10,7 +12,7 @@ This is the starter project for the fullstack tutorial with Next.js and Prisma. 
 
 To actually create the tables in your database, you now can use the following command of the Prisma CLI:
 
-with multiple .env files:
+with multiple .env files (e.g., `.env.local`):
 
 `dotenv -e .env.local -- npx prisma db push`
 
@@ -20,7 +22,7 @@ with only .env:
 
 **Studio**
 
-`npx prisma studio` opens a db editor
+`npx prisma studio` opens a db editor connected to the vercel cloud pg db
 
 The above requires installing the prisma cli and the dotenv cli
 `npm install -g dotenv-cli && npx prisma generate`

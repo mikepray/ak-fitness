@@ -1,4 +1,4 @@
-import { Box, Flex, Stack, Title, Text, Container } from "@mantine/core";
+import { Stack, Text, Title } from "@mantine/core";
 import { GetStaticProps } from "next";
 import React from "react";
 import Post, { PostProps } from "../components/Post";

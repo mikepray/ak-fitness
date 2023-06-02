@@ -1,8 +1,11 @@
 // pages/api/post/index.ts
 
+import { getServerSession } from "next-auth";
+import { getSession } from "next-auth/react";
+import prisma from "../../../../lib/prisma";
+import { nextAuthOptions } from "../../auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
-import { postAuthed } from "../../../lib/requestHandler";
+import { postAuthed } from "../../../../lib/requestHandler";
 
 // POST /api/post
 // Required fields in body: title
@@ -11,7 +14,8 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  postAuthed(req, res, async ({ req, res, session }) => {
+
+  postAuthed(req, res, async ({req, res, session}) => {
     const { title, content, published } = req.body;
     const result = await prisma.post.create({
       data: {
@@ -22,5 +26,5 @@ export default async function handle(
       },
     });
     res.json(result);
-  });
+  })
 }

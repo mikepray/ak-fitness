@@ -1,16 +1,17 @@
-// pages/api/post/[id].ts
+// pages/api/publish/[id].ts
 
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
-import { deleteAuthed } from "../../../lib/requestHandler";
+import { getAuthed } from "../../../lib/requestHandler";
 
-// DELETE /api/post/:id
+// GET /api/workspace/:id
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  deleteAuthed(req, res, async ({ req, res, idQueryParam }) => {
-    const post = await prisma.post.delete({
+  getAuthed(req, res, async ({res, idQueryParam}) => {
+
+    const post = await prisma.workspace.findFirst({
       where: { id: idQueryParam },
     });
     res.json(post);
