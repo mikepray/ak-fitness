@@ -1,68 +1,57 @@
 // schema.prisma
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
-model Workspace {
-  id                String  @id @default(cuid())
-  canUsersRegister  Boolean
-  name              String?
-  description       String?
-  workspaceUsers    WorkspaceUser[]
-}
-
-model WorkspaceUser {
-  id                String  @id @default(cuid())
-  workspaceId       String
-  workspace         Workspace @relation(fields:[workspaceId], references:[id])
-  userId            String   
-  user              User @relation(fields:[userId], references:[id])
-  isUserEnabled     Boolean @default(true)
-  isWorkspaceAdmin  Boolean @default(false)
+model WorkspaceConfig {
+  id               Int     @id @default(0) // must be zero TODO add a check constraint via sql
+  canUsersRegister Boolean @default(true)
+  name             String
+  description      String?
 }
 
 model User {
-  id              String    @id @default(cuid())
-  isGlobalAdmin   Boolean   @default(false)
-  name            String?
-  email           String?@unique
-  emailVerified   DateTime?
-  image           String?
-  posts           Post[]
-  accounts        Account[]
-  sessions        Session[]
-  workoutUsers    WorkoutUser[]
-  workspaceUsers  WorkspaceUser[]
+  id            String    @id @default(cuid())
+  isGlobalAdmin Boolean   @default(false)
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  isUserEnabled Boolean   @default(true)
+  posts        Post[]
+  accounts     Account[]
+  sessions     Session[]
+  workoutUsers WorkoutUser[]
 }
 
 model WorkoutUser {
-  id              String    @id @default(cuid())
-  workoutId       String
-  workout         Workout   @relation(fields:[workoutId], references:[id])
-  userId          String
-  user            User   @relation(fields:[userId], references:[id])
+  id        String  @id @default(cuid())
+  workoutId String
+  workout   Workout @relation(fields: [workoutId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
 }
 
 model Workout {
-  id                String    @id @default(cuid())
-  name              String
-  description       String?
-  tags              String?
-  workoutExercises  WorkoutExercise[]
-  workoutUsers      WorkoutUser[]
+  id               String            @id @default(cuid())
+  name             String
+  description      String?
+  tags             String?
+  workoutExercises WorkoutExercise[]
+  workoutUsers     WorkoutUser[]
 }
 
 model Exercise {
-  id                String    @id @default(cuid())
+  id                String            @id @default(cuid())
   name              String
   description       String?
   tags              String?
@@ -72,14 +61,14 @@ model Exercise {
 }
 
 model WorkoutExercise {
-  id                String    @id @default(cuid())
-  workout           Workout   @relation(fields:[workoutId], references:[id])
-  workoutId         String
-  exercise          Exercise   @relation(fields:[exerciseId], references:[id])
-  exerciseId        String
-  sets              String?
-  reps              String?
-  restSeconds       String?
+  id          String   @id @default(cuid())
+  workout     Workout  @relation(fields: [workoutId], references: [id])
+  workoutId   String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId  String
+  sets        String?
+  reps        String?
+  restSeconds String?
 }
 
 model Post {
@@ -87,7 +76,7 @@ model Post {
   title     String
   content   String?
   published Boolean @default(false)
-  author    User?   @relation(fields:[authorId], references:[id])
+  author    User?   @relation(fields: [authorId], references: [id])
   authorId  String?
 }
 
@@ -108,17 +97,17 @@ model Account {
   oauth_token_secret String?
   oauth_token        String?
 
-  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique@map("session_token")
+  sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
   expires      DateTime
-  user         User     @relation(fields:[userId], references:[id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

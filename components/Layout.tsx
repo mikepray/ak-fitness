@@ -14,13 +14,14 @@ import {
   Stack,
   Text,
   Title,
-  UnstyledButton
+  UnstyledButton,
 } from "@mantine/core";
+import { User } from "@prisma/client";
 import { IconBarbell } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useState } from "react";
-import { useGetMe } from "../hooks/useGetMe";
+import { useGetEffect } from "../hooks/useGetEffect";
 
 type Props = {
   children: ReactNode;
@@ -30,8 +31,8 @@ const Layout: React.FC<Props> = (props) => {
   const router = useRouter();
   const isActive: (pathname: string) => boolean = (pathname) =>
     router.pathname === pathname;
-  const me = useGetMe();  
   const { data: session, status } = useSession();
+  const me = useGetEffect<User>("/api/user/me", [session]);
   const [opened, setOpened] = useState(false);
   const label = opened ? "Close navigation" : "Open navigation";
 
@@ -63,19 +64,14 @@ const Layout: React.FC<Props> = (props) => {
                     >
                       Create Post
                     </Anchor>
-                    <Anchor
-                      href="/workspaces"
-                      weight={isActive("/workspaces") ? "bold" : "normal"}
-                    >
-                      Workspaces
-                    </Anchor>
+                   
                     {me?.isGlobalAdmin && (
-                       <Anchor
-                       href="/admin"
-                       weight={isActive("/admin") ? "bold" : "normal"}
-                     >
-                       Application Admin
-                     </Anchor>
+                      <Anchor
+                        href="/admin"
+                        weight={isActive("/admin") ? "bold" : "normal"}
+                      >
+                        Admin
+                      </Anchor>
                     )}
                   </>
                 )}
@@ -113,39 +109,34 @@ const Layout: React.FC<Props> = (props) => {
                   </Center>
                   <Title order={3}>AK Fitness</Title>
                   <Group mt={5}>
-                  <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
-                    Feed
-                  </Anchor>
-                  {session && (
-                    <>
-                      <Anchor
-                        href="/drafts"
-                        weight={isActive("/drafts") ? "bold" : "normal"}
-                      >
-                        Drafts
-                      </Anchor>
-                      <Anchor
-                        href="/create"
-                        weight={isActive("/create") ? "bold" : "normal"}
-                      >
-                        Create Post
-                      </Anchor>
-                      <Anchor
-                      href="/workspaces"
-                      weight={isActive("/workspaces") ? "bold" : "normal"}
-                    >
-                      Workspaces
+                    <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
+                      Feed
                     </Anchor>
-                      {me?.isGlobalAdmin && (
-                       <Anchor
-                       href="/admin"
-                       weight={isActive("/admin") ? "bold" : "normal"}
-                     >
-                       Application Admin
-                     </Anchor>
+                    {session && (
+                      <>
+                        <Anchor
+                          href="/drafts"
+                          weight={isActive("/drafts") ? "bold" : "normal"}
+                        >
+                          Drafts
+                        </Anchor>
+                        <Anchor
+                          href="/create"
+                          weight={isActive("/create") ? "bold" : "normal"}
+                        >
+                          Create Post
+                        </Anchor>
+                        
+                        {me?.isGlobalAdmin && (
+                          <Anchor
+                            href="/admin"
+                            weight={isActive("/admin") ? "bold" : "normal"}
+                          >
+                            Admin
+                          </Anchor>
+                        )}
+                      </>
                     )}
-                    </>
-                  )}
                   </Group>
                 </Group>
                 <Flex align="flex-end" gap="sm">

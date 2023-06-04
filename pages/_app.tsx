@@ -1,5 +1,6 @@
 import { SessionProvider } from "next-auth/react";
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications"
 
 import { AppProps } from "next/app";
 import Layout from "../components/Layout";
@@ -15,9 +16,10 @@ const App = ({ Component, pageProps }: AppProps) => {
           colorScheme: "dark",
         }}
       >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <Notifications />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
       </MantineProvider>
     </SessionProvider>
   );

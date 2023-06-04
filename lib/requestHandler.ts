@@ -92,7 +92,7 @@ export async function deleteAuthed(
 
 export async function coolHandle(properties: HandlerProperties) {
   if (properties.req.method !== properties.method) {
-    properties.res.status(405).send("Method not allowed");
+    // properties.res.status(405).send("Method not allowed");
     return;
   }
 
