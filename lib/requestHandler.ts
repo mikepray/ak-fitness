@@ -9,6 +9,7 @@ export type HandlerProperties = {
   res: NextApiResponse;
   method: string;
   requireSession: boolean;
+  requireGlobalAdmin: boolean;
   work: (props: CallbackProperties) => {};
 };
 
@@ -30,6 +31,7 @@ export async function get(
     res: res,
     method: "GET",
     requireSession: false,
+    requireGlobalAdmin: false,
     work: work,
   });
 }
@@ -37,6 +39,7 @@ export async function get(
 export async function getAuthed(
   req: NextApiRequest,
   res: NextApiResponse,
+  requireGlobalAdmin: boolean | false,
   work: ({ req, res, session, user }: CallbackProperties) => {}
 ) {
   coolHandle({
@@ -44,13 +47,15 @@ export async function getAuthed(
     res: res,
     method: "GET",
     requireSession: true,
+    requireGlobalAdmin: requireGlobalAdmin,
     work: work,
   });
 }
 
 export async function postAuthed(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse,  
+    requireGlobalAdmin: boolean | false,
   work: ({ req, res, session, user }: CallbackProperties) => {}
 ) {
   coolHandle({
@@ -58,13 +63,15 @@ export async function postAuthed(
     res: res,
     method: "POST",
     requireSession: true,
+    requireGlobalAdmin: requireGlobalAdmin,
     work: work,
   });
 }
 
 export async function putAuthed(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse,  
+  requireGlobalAdmin: boolean | false,
   work: ({ req, res, session, user }: CallbackProperties) => {}
 ) {
   coolHandle({
@@ -72,6 +79,7 @@ export async function putAuthed(
     res: res,
     method: "PUT",
     requireSession: true,
+    requireGlobalAdmin: requireGlobalAdmin,
     work: work,
   });
 }
@@ -79,6 +87,7 @@ export async function putAuthed(
 export async function deleteAuthed(
   req: NextApiRequest,
   res: NextApiResponse,
+  requireGlobalAdmin: boolean | false,
   work: ({ req, res, session, user }: CallbackProperties) => {}
 ) {
   coolHandle({
@@ -86,6 +95,7 @@ export async function deleteAuthed(
     res: res,
     method: "DELETE",
     requireSession: true,
+    requireGlobalAdmin: requireGlobalAdmin,
     work: work,
   });
 }
@@ -119,6 +129,10 @@ export async function coolHandle(properties: HandlerProperties) {
       const user = await prisma.user.findFirst({
         where: { email: session.user.email },
       });
+
+      if (properties.requireGlobalAdmin && !user.isGlobalAdmin) {
+        properties.res.status(401).send("You lack the required authorization")
+      }
 
       properties.work({
         req: properties.req,

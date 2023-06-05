@@ -11,7 +11,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  postAuthed(req, res, async ({ req, res, session }) => {
+  postAuthed(req, res, true, async ({ req, res, session }) => {
     const { title, content, published } = req.body;
     const result = await prisma.post.create({
       data: {

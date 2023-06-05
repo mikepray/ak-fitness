@@ -1,12 +1,14 @@
 // pages/p/[id].tsx
 
-import { Container, Flex, Paper, Text, Title } from "@mantine/core";
+import { Container, Paper, Text, Title } from "@mantine/core";
+import { User } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { AdminPostActions } from "../../components/AdminPostActions";
 import { PostProps } from "../../components/Post";
+import { useGetEffect } from "../../hooks/useGetEffect";
 import prisma from "../../lib/prisma";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -27,13 +29,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 const Post: React.FC<PostProps> = (props) => {
   const { data: session, status } = useSession();
-
-  // const postBelongsToUser = session?.user?.email === props.author?.email;
+  const me = useGetEffect<User>("/api/user/me", [session]);
 
   return (
     <>
       {status !== "loading" && (
-       <Container>
+        <Container>
           <Paper shadow="md" p="md" withBorder maw={1024}>
             <Title>
               {props.title}
@@ -41,15 +42,17 @@ const Post: React.FC<PostProps> = (props) => {
             </Title>
             <Text c="dimmed">By {props?.author?.name || "Unknown author"}</Text>
             <ReactMarkdown children={props.content} />
-            <AdminPostActions
-              id={props.id}
-              published={props.published}
-              routeAfterAction={{
-                onPublish: `/p/${props.id}`,
-                onUnpublish: `/p/${props.id}`,
-                onDelete: `/`,
-              }}
-            />
+            {me?.isGlobalAdmin && (
+              <AdminPostActions
+                id={props.id}
+                published={props.published}
+                routeAfterAction={{
+                  onPublish: `/p/${props.id}`,
+                  onUnpublish: `/p/${props.id}`,
+                  onDelete: `/`,
+                }}
+              />
+            )}
           </Paper>
         </Container>
       )}

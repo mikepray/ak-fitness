@@ -22,6 +22,7 @@ import { UserEdit } from "../components/UserEdit";
 import { useGetEffect } from "../hooks/useGetEffect";
 import prisma from "../lib/prisma";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
+import { AuthAdminRequired } from "../components/AuthAdminRequired";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
@@ -53,7 +54,7 @@ type Props = {
 };
 
 const Admin: React.FC<Props> = (props) => {
-  const { data: session, status } = useSession({required: true});
+  const { data: session, status } = useSession({ required: true });
   const me = useGetEffect<User>("/api/user/me", [session]);
 
   const workspaceForm = useForm({
@@ -106,9 +107,18 @@ const Admin: React.FC<Props> = (props) => {
     }
   };
 
+  if (status === "loading" || !session || !me) {
+    return <Loader />;
+  }
+
+  if (!me.isGlobalAdmin) {
+    return (
+      <AuthAdminRequired />
+    )
+  }
+
   return (
     <>
-      {status === "loading" && <Loader />}
       {session && me?.isGlobalAdmin && (
         <>
           <Title p="md">Administration</Title>
@@ -161,22 +171,13 @@ const Admin: React.FC<Props> = (props) => {
                 <Accordion.Control>Users</Accordion.Control>
                 <Accordion.Panel>
                   {props.users?.map((user) => (
-                    <UserEdit user={user} key={user.email}/>
+                    <UserEdit user={user} key={user.email} />
                   ))}
                 </Accordion.Panel>
               </Accordion.Item>
             </Accordion>
           </Stack>
         </>
-      )}
-      {!me?.isGlobalAdmin && (
-        <Alert
-          icon={<IconAlertCircle size="1rem" />}
-          color="red"
-          variant="filled"
-        >
-          You need to be an authenticated admin to view this page
-        </Alert>
       )}
     </>
   );

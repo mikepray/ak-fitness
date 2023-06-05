@@ -1,11 +1,14 @@
 // pages/drafts.tsx
 
 import { Alert, Loader, Stack, Title } from "@mantine/core";
+import { User } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import React from "react";
+import { AuthAdminRequired } from "../components/AuthAdminRequired";
 import Post, { PostProps } from "../components/Post";
+import { useGetEffect } from "../hooks/useGetEffect";
 import prisma from "../lib/prisma";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
 
@@ -18,7 +21,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   const drafts = await prisma.post.findMany({
     where: {
-      author: { email: session.user.email },
       published: false,
     },
     include: {
@@ -37,16 +39,24 @@ type Props = {
 };
 
 const Drafts: React.FC<Props> = (props) => {
- const { status } = useSession({required: true});
+  const { data: session, status } = useSession({ required: true });
+  const me = useGetEffect<User>("/api/user/me", [session]);
 
+  if (status === "loading" || !session || !me) {
+    return <Loader />;
+  }
+
+  if (!me.isGlobalAdmin) {
+    return <AuthAdminRequired />;
+  }
+  
   return (
     <>
-    {status === "loading" && <Loader />}
       <Title p="md">Your Drafts</Title>
       <Stack spacing="md">
         {props.drafts.map((post) => (
           <div key={post.id} className="post">
-            <Post post={post} />
+            <Post post={post} user={me} />
           </div>
         ))}
         {props.drafts.length === 0 && (

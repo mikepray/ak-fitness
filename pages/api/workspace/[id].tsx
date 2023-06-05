@@ -9,22 +9,18 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  putAuthed(req, res, async ({ res, user }) => {
-    if (user.isGlobalAdmin) {
-      const { name, description, canUsersRegister } = req.body;
-      const workspaceConfig = await prisma.workspaceConfig.update({
-        where: {
-          id: 0,
-        },
-        data: {
-          name: name,
-          description: description,
-          canUsersRegister: canUsersRegister,
-        },
-      });
-      res.json(workspaceConfig);
-    } else {
-      res.send(401);
-    }
+  putAuthed(req, res, true, async ({ res, user }) => {
+    const { name, description, canUsersRegister } = req.body;
+    const workspaceConfig = await prisma.workspaceConfig.update({
+      where: {
+        id: 0,
+      },
+      data: {
+        name: name,
+        description: description,
+        canUsersRegister: canUsersRegister,
+      },
+    });
+    res.json(workspaceConfig);
   });
 }

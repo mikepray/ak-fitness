@@ -1,20 +1,23 @@
 import {
-  Box,
   Button,
   Checkbox,
   Group,
   Loader,
   TextInput,
   Textarea,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useSession } from "next-auth/react";
 import Router from "next/router";
 import React from "react";
+import { useGetEffect } from "../hooks/useGetEffect";
+import { User } from "@prisma/client";
+import { AuthAdminRequired } from "../components/AuthAdminRequired";
 
 const Draft: React.FC = () => {
-  const { status } = useSession({ required: true });
+  const { data: session, status } = useSession({ required: true });
+  const me = useGetEffect<User>("/api/user/me", [session]);
   const form = useForm({
     initialValues: {
       title: "",
@@ -53,9 +56,18 @@ const Draft: React.FC = () => {
     }
   };
 
+  if (status === "loading" || !session || !me) {
+    return <Loader />;
+  }
+
+  if (!me.isGlobalAdmin) {
+    return (
+      <AuthAdminRequired />
+    )
+  }
+
   return (
     <>
-      {status === "loading" && <Loader />}
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
         <Title order={2}>New Post</Title>
         <TextInput

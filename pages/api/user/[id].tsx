@@ -9,7 +9,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  putAuthed(req, res, async ({ res, user, idQueryParam }) => {
+  putAuthed(req, res, false, async ({ res, user, idQueryParam }) => {
     // only global admins can enable/disable users
     if (user.isGlobalAdmin) {
       const { name, isUserEnabled } = req.body;

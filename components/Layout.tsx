@@ -1,11 +1,11 @@
 import {
   Anchor,
   AppShell,
+  Avatar,
   Box,
   Burger,
   Center,
   Container,
-  Flex,
   Group,
   Header,
   Loader,
@@ -48,9 +48,9 @@ const Layout: React.FC<Props> = (props) => {
             <Navbar p="md" hidden={!opened}>
               <Stack>
                 <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
-                  Feed
+                  Home
                 </Anchor>
-                {session && (
+                {session && me?.isGlobalAdmin && (
                   <>
                     <Anchor
                       href="/drafts"
@@ -64,15 +64,13 @@ const Layout: React.FC<Props> = (props) => {
                     >
                       Create Post
                     </Anchor>
-                   
-                    {me?.isGlobalAdmin && (
-                      <Anchor
-                        href="/admin"
-                        weight={isActive("/admin") ? "bold" : "normal"}
-                      >
-                        Admin
-                      </Anchor>
-                    )}
+
+                    <Anchor
+                      href="/admin"
+                      weight={isActive("/admin") ? "bold" : "normal"}
+                    >
+                      Admin
+                    </Anchor>
                   </>
                 )}
                 {status === "loading" && <Loader />}
@@ -84,6 +82,7 @@ const Layout: React.FC<Props> = (props) => {
                   <UnstyledButton onClick={() => signOut()}>
                     <Anchor>Log Out</Anchor>
                   </UnstyledButton>
+
                 )}
               </Stack>
             </Navbar>
@@ -92,13 +91,20 @@ const Layout: React.FC<Props> = (props) => {
         header={
           <Header height={60} p="xs">
             <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-              <Group>
+              <Group position="apart">
+                <Group>
                 <Burger
                   opened={opened}
                   onClick={() => setOpened((o) => !o)}
                   size="sm"
                 ></Burger>
                 <Title order={3}>AK Fitness</Title>
+                </Group>
+                <Avatar
+                        src={session?.user.image}
+                        radius="xl"
+                        alt="profile picture"
+                      />
               </Group>
             </MediaQuery>
             <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
@@ -110,9 +116,9 @@ const Layout: React.FC<Props> = (props) => {
                   <Title order={3}>AK Fitness</Title>
                   <Group mt={5}>
                     <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
-                      Feed
+                      Home
                     </Anchor>
-                    {session && (
+                    {session && me?.isGlobalAdmin && (
                       <>
                         <Anchor
                           href="/drafts"
@@ -126,31 +132,36 @@ const Layout: React.FC<Props> = (props) => {
                         >
                           Create Post
                         </Anchor>
-                        
-                        {me?.isGlobalAdmin && (
-                          <Anchor
-                            href="/admin"
-                            weight={isActive("/admin") ? "bold" : "normal"}
-                          >
-                            Admin
-                          </Anchor>
-                        )}
+
+                        <Anchor
+                          href="/admin"
+                          weight={isActive("/admin") ? "bold" : "normal"}
+                        >
+                          Admin
+                        </Anchor>
                       </>
                     )}
                   </Group>
                 </Group>
-                <Flex align="flex-end" gap="sm">
+                <Group>
                   {status === "loading" && <Loader />}
                   {session && <Text>Welcome, {session?.user.name}</Text>}
                   {status !== "loading" && !session && (
                     <Anchor href="/api/auth/signin">Log in</Anchor>
                   )}
                   {session && (
-                    <UnstyledButton onClick={() => signOut()}>
-                      <Anchor>Log Out</Anchor>
-                    </UnstyledButton>
+                    <>
+                      <UnstyledButton onClick={() => signOut()}>
+                        <Anchor>Log Out</Anchor>
+                      </UnstyledButton>
+                      <Avatar
+                        src={session?.user.image}
+                        radius="xl"
+                        alt="profile picture"
+                      />
+                    </>
                   )}
-                </Flex>
+                </Group>
               </Group>
             </MediaQuery>
           </Header>
