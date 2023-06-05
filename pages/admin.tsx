@@ -2,28 +2,26 @@ import {
   Accordion,
   Alert,
   Button,
-  Checkbox,
   Group,
   Loader,
-  Slider,
   Stack,
   Switch,
-  Text,
   TextInput,
   Textarea,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import { User, WorkspaceConfig } from "@prisma/client";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import React from "react";
+import { UserEdit } from "../components/UserEdit";
 import { useGetEffect } from "../hooks/useGetEffect";
 import prisma from "../lib/prisma";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
-import { notifications } from "@mantine/notifications";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
@@ -58,7 +56,7 @@ const Blog: React.FC<Props> = (props) => {
   const { data: session, status } = useSession();
   const me = useGetEffect<User>("/api/user/me", [session]);
 
-  const form = useForm({
+  const workspaceForm = useForm({
     initialValues: {
       workspaceName: props.workspace.name,
       workspaceDescription: props.workspace.description,
@@ -70,13 +68,13 @@ const Blog: React.FC<Props> = (props) => {
     },
   });
 
-  const submitData = async (formData: {
+  const submitWorkspaceForm = async (formData: {
     workspaceName: string;
     workspaceDescription: string;
     canUsersRegister: boolean;
   }) => {
     try {
-      await fetch(`/api/workspace/0`, {
+      const response = await fetch(`/api/workspace/0`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -87,10 +85,24 @@ const Blog: React.FC<Props> = (props) => {
       });
 
       notifications.show({
-        message: "Workspace saved"
-      })
+        message: "Workspace successfully updated",
+      });
+
+      if (response.status === 200) {
+        notifications.show({
+          message: `Workspace successfully updated`,
+        });
+      } else {
+        notifications.show({
+          message: `${response.status} ${response.statusText}`,
+          color: "red",
+        });
+      }
     } catch (error) {
       console.error(error);
+      notifications.show({
+        message: "There was a problem taking the action",
+      });
     }
   };
 
@@ -99,25 +111,33 @@ const Blog: React.FC<Props> = (props) => {
       {status === "loading" && <Loader />}
       {session && me?.isGlobalAdmin && (
         <>
-          <form onSubmit={form.onSubmit((values) => submitData(values))}>
-            <Title p="md">Administration</Title>
+          <Title p="md">Administration</Title>
 
-            <Stack spacing="md">
-              <Accordion variant="separated" chevronPosition="left">
-                <Accordion.Item value="Workspace">
+          <Stack spacing="md">
+            <Accordion
+              variant="separated"
+              chevronPosition="left"
+              defaultValue="Workspace"
+            >
+              <Accordion.Item value="Workspace">
+                <form
+                  onSubmit={workspaceForm.onSubmit((values) =>
+                    submitWorkspaceForm(values)
+                  )}
+                >
                   <Accordion.Control>Workspace</Accordion.Control>
                   <Accordion.Panel>
                     <TextInput
                       withAsterisk
                       label="Workspace Name"
                       placeholder="Workspace Name"
-                      {...form.getInputProps("workspaceName")}
+                      {...workspaceForm.getInputProps("workspaceName")}
                     />
                     <Textarea
                       label="Description"
                       placeholder="Description"
                       minRows={3}
-                      {...form.getInputProps("workspaceDescription")}
+                      {...workspaceForm.getInputProps("workspaceDescription")}
                     />
                     <Group mt="md">
                       <Switch
@@ -125,7 +145,7 @@ const Blog: React.FC<Props> = (props) => {
                         onLabel="Yes"
                         offLabel="No"
                         labelPosition="left"
-                        {...form.getInputProps("canUsersRegister", {
+                        {...workspaceForm.getInputProps("canUsersRegister", {
                           type: "checkbox",
                         })}
                       />
@@ -134,27 +154,19 @@ const Blog: React.FC<Props> = (props) => {
                       <Button type="submit">Update</Button>
                     </Group>
                   </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion>
+                </form>
+              </Accordion.Item>
 
-              {/*workspaces?.map((workspace) => (
-              <Accordion variant="separated" chevronPosition="left">
-                <Accordion.Item value={workspace.name}>
-                  <Accordion.Control>{workspace.name}</Accordion.Control>
-                  <Accordion.Panel>
-                    <Text>ID: {workspace.id}</Text>
-                    <Text>Name: {workspace.name}</Text>
-                    <Text>Description: {workspace.description}</Text>
-                    <Text>
-                      Can users register? {workspace.canUsersRegister}
-                    </Text>
-                    <Title order={5}>Users in Workspace:</Title>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              </Accordion>
-            ))*/}
-            </Stack>
-          </form>
+              <Accordion.Item value="Users">
+                <Accordion.Control>Users</Accordion.Control>
+                <Accordion.Panel>
+                  {props.users?.map((user) => (
+                    <UserEdit user={user} />
+                  ))}
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          </Stack>
         </>
       )}
       {status !== "loading" && (!session || !me?.isGlobalAdmin) && (
