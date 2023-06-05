@@ -1,7 +1,6 @@
 // pages/drafts.tsx
 
-import { Alert, Box, Flex, Loader, Stack, Title } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { Alert, Loader, Stack, Title } from "@mantine/core";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";

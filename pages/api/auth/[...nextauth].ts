@@ -20,10 +20,20 @@ export const nextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      // console.log(user, account, profile, email, credentials)
       if (user.isGlobalAdmin || user.isUserEnabled) {
         return true
+      }
+      const { canUsersRegister } = await prisma.workspaceConfig.findUnique({
+        where: {
+          id: 0
+        }
+      })
+      if (user.isUserEnabled === undefined && canUsersRegister) {
+        // if isUserEnabled is undefined, it means a new user is joining
+        return true;
       } else {
+
+        console.log("did not allow user to join", user, account, profile, canUsersRegister)
         // Return false to display a default error message
         return false
         // Or you can return a URL to redirect to:
