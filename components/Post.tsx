@@ -1,4 +1,4 @@
-import { Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Badge, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { User } from "@prisma/client";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -27,14 +27,17 @@ const Post: React.FC<{ post: PostProps; user: User }> = ({ post, user }) => {
             published={post.published}
             routeAfterAction={{
               onPublish: `/`,
-              onUnpublish: `/drafts`,
-              onDelete: `/${post.published ? "/" : "/drafts"}`,
+              onUnpublish: `/`,
+              onDelete: `/${post.published ? "/" : "/"}`,
             }}
           />
         )}
       </Group>
       <Stack>
-        <Text c="dimmed">By {authorName}</Text>
+        <Group>
+          <Text c="dimmed">By {authorName}</Text>
+          <Badge color={post.published ? "blue" : "gray"}>{post.published ? "Published" : "Unpublished"}</Badge>
+        </Group>
         <ReactMarkdown children={post.content} />
       </Stack>
     </Paper>

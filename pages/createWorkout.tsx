@@ -14,39 +14,48 @@ import React from "react";
 import { useGetEffect } from "../hooks/useGetEffect";
 import { User } from "@prisma/client";
 import { AuthAdminRequired } from "../components/AuthAdminRequired";
+import { notifications } from "@mantine/notifications";
 
-const CreatePost: React.FC = () => {
+const CreateWorkout: React.FC = () => {
   const { data: session, status } = useSession({ required: true });
   const me = useGetEffect<User>("/api/user/me", [session]);
   const form = useForm({
     initialValues: {
-      title: "",
-      content: "",
-      immediatelyPublish: false,
+      name: "",
+      description: "",
+      tags: "",
     },
     validate: {
-      title: (value) => (value.length > 0 ? null : "Title is required"),
-      content: (value) =>
-        value.length > 0 ? null : "Post content is required",
+      name: (value) => (value.length > 0 ? null : "Name is required"),
     },
   });
 
   const submitData = async (formData: {
-    title: string;
-    content: string;
-    immediatelyPublish: boolean;
+    name: string;
+    description: string;
+    tags: string;
   }) => {
     try {
-      await fetch("/api/post", {
+      const response = await fetch("/api/workout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: formData.title,
-          content: formData.content,
-          published: formData.immediatelyPublish,
+          name: formData.name,
+          description: formData.description,
+          tags: formData.tags,
         }),
       });
-      await Router.push("/");
+      if (response.status === 200) {
+        notifications.show({
+          message: `Workout created`,
+        });
+      } else {
+        notifications.show({
+          message: `${response.status} ${response.statusText}`,
+          color: "red",
+        });
+      }
+      await Router.push("/workouts");
     } catch (error) {
       console.error(error);
     }
@@ -63,26 +72,25 @@ const CreatePost: React.FC = () => {
   return (
     <>
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
-        <Title order={2}>Create Post</Title>
+        <Title order={2}>New Workout</Title>
         <TextInput
           withAsterisk
-          label="Title"
-          placeholder="Title"
-          {...form.getInputProps("title")}
+          label="Name"
+          placeholder="Name"
+          {...form.getInputProps("name")}
         />
         <Textarea
-          label="Content"
-          placeholder="Content"
-          withAsterisk
-          minRows={10}
-          {...form.getInputProps("content")}
+          label="Description"
+          placeholder="Description"
+          minRows={5}
+          {...form.getInputProps("description")}
         />
-        <Group mt="md">
-          <Checkbox
-            label="Immediately Publish?"
-            {...form.getInputProps("immediatelyPublish")}
-          />
-        </Group>
+        <TextInput
+          label="Tags"
+          placeholder="Tags"
+          {...form.getInputProps("tags")}
+        />
+        TODO link exercises
         <Group position="right" mt="md">
           <Button type="submit">Create</Button>
         </Group>
@@ -91,4 +99,4 @@ const CreatePost: React.FC = () => {
   );
 };
 
-export default CreatePost;
+export default CreateWorkout;

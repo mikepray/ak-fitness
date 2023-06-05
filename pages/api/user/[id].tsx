@@ -12,14 +12,15 @@ export default async function handle(
   putAuthed(req, res, false, async ({ res, user, idQueryParam }) => {
     // only global admins can enable/disable users
     if (user.isGlobalAdmin) {
-      const { name, isUserEnabled } = req.body;
+      const { name, isUserEnabled, isGlobalAdmin } = req.body;
       const user = await prisma.user.update({
         where: {
           id: idQueryParam,
         },
         data: {
           name: name,
-          isUserEnabled: isUserEnabled
+          isUserEnabled: isUserEnabled,
+          isGlobalAdmin: isGlobalAdmin,
         },
       });
       res.json(user);

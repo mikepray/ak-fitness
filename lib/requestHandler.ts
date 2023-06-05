@@ -105,6 +105,13 @@ export async function coolHandle(properties: HandlerProperties) {
     // properties.res.status(405).send("Method not allowed");
     return;
   }
+  // perform type narrowing for id query parameters
+  if (Array.isArray(properties.req.query?.id)) {
+    properties.res
+      .status(400)
+      .send('{"error": "Only a single query parameter is supported"}')
+    return;
+  }
 
   if (properties.requireSession) {
     const session = await getServerSession(
@@ -112,16 +119,10 @@ export async function coolHandle(properties: HandlerProperties) {
       properties.res,
       nextAuthOptions
     );
-    if (!session || !session.user) {
-      properties.res.status(401).send("You are not authenticated");
-      return;
-    }
 
-    // perform type narrowing for id query parameters
-    if (Array.isArray(properties.req.query?.id)) {
-      properties.res
-        .status(400)
-        .send("Only a single query parameter is supported");
+    if (!session || !session.user) {
+      properties.res.status(401)
+      .send('{"error": "You are not authenticated"}');
       return;
     }
 
@@ -131,7 +132,8 @@ export async function coolHandle(properties: HandlerProperties) {
       });
 
       if (properties.requireGlobalAdmin && !user.isGlobalAdmin) {
-        properties.res.status(401).send("You lack the required authorization")
+        properties.res.status(401)
+        .send('{"error": "You lack the required authorization"}')
       }
 
       properties.work({
@@ -143,11 +145,11 @@ export async function coolHandle(properties: HandlerProperties) {
       });
       return;
     }
-
-    properties.work({
-      req: properties.req,
-      res: properties.res,
-      idQueryParam: properties.req.query?.id,
-    });
   }
+
+  properties.work({
+    req: properties.req,
+    res: properties.res,
+    idQueryParam: properties.req.query?.id,
+  });
 }

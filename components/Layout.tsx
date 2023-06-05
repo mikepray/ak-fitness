@@ -16,7 +16,7 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
-import { User } from "@prisma/client";
+import { User, WorkspaceConfig } from "@prisma/client";
 import { IconBarbell } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -34,7 +34,7 @@ const Layout: React.FC<Props> = (props) => {
   const { data: session, status } = useSession();
   const me = useGetEffect<User>("/api/user/me", [session]);
   const [opened, setOpened] = useState(false);
-  const label = opened ? "Close navigation" : "Open navigation";
+  const workspace = useGetEffect<WorkspaceConfig>("/api/workspace", [session]);
 
   return (
     <>
@@ -53,18 +53,25 @@ const Layout: React.FC<Props> = (props) => {
                 {session && me?.isGlobalAdmin && (
                   <>
                     <Anchor
-                      href="/drafts"
-                      weight={isActive("/drafts") ? "bold" : "normal"}
+                      href="/exercises"
+                      weight={isActive("/exercises") ? "bold" : "normal"}
                     >
-                      Drafts
+                      Exercises
                     </Anchor>
                     <Anchor
-                      href="/create"
-                      weight={isActive("/create") ? "bold" : "normal"}
+                      href="/workouts"
+                      weight={isActive("/workouts") ? "bold" : "normal"}
                     >
-                      Create Post
+                      Workouts
                     </Anchor>
-
+                    <Anchor
+                      href="/workoutAssignment"
+                      weight={
+                        isActive("/workoutAssignment") ? "bold" : "normal"
+                      }
+                    >
+                      Workout Assignment
+                    </Anchor>
                     <Anchor
                       href="/admin"
                       weight={isActive("/admin") ? "bold" : "normal"}
@@ -82,7 +89,6 @@ const Layout: React.FC<Props> = (props) => {
                   <UnstyledButton onClick={() => signOut()}>
                     <Anchor>Log Out</Anchor>
                   </UnstyledButton>
-
                 )}
               </Stack>
             </Navbar>
@@ -93,18 +99,18 @@ const Layout: React.FC<Props> = (props) => {
             <MediaQuery largerThan="sm" styles={{ display: "none" }}>
               <Group position="apart">
                 <Group>
-                <Burger
-                  opened={opened}
-                  onClick={() => setOpened((o) => !o)}
-                  size="sm"
-                ></Burger>
-                <Title order={3}>AK Fitness</Title>
+                  <Burger
+                    opened={opened}
+                    onClick={() => setOpened((o) => !o)}
+                    size="sm"
+                  ></Burger>
+                  <Title order={3}>{workspace?.name}</Title>
                 </Group>
                 <Avatar
-                        src={session?.user.image}
-                        radius="xl"
-                        alt="profile picture"
-                      />
+                  src={session?.user.image}
+                  radius="xl"
+                  alt="profile picture"
+                />
               </Group>
             </MediaQuery>
             <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
@@ -113,7 +119,7 @@ const Layout: React.FC<Props> = (props) => {
                   <Center>
                     <IconBarbell />
                   </Center>
-                  <Title order={3}>AK Fitness</Title>
+                  <Title order={3}>{workspace?.name}</Title>
                   <Group mt={5}>
                     <Anchor href="/" weight={isActive("/") ? "bold" : "normal"}>
                       Home
@@ -121,18 +127,25 @@ const Layout: React.FC<Props> = (props) => {
                     {session && me?.isGlobalAdmin && (
                       <>
                         <Anchor
-                          href="/drafts"
-                          weight={isActive("/drafts") ? "bold" : "normal"}
+                          href="/exercises"
+                          weight={isActive("/exercises") ? "bold" : "normal"}
                         >
-                          Drafts
+                          Exercises
+                        </Anchor>{" "}
+                        <Anchor
+                          href="/workouts"
+                          weight={isActive("/workouts") ? "bold" : "normal"}
+                        >
+                          Workouts
                         </Anchor>
                         <Anchor
-                          href="/create"
-                          weight={isActive("/create") ? "bold" : "normal"}
+                          href="/workoutAssignment"
+                          weight={
+                            isActive("/workoutAssignment") ? "bold" : "normal"
+                          }
                         >
-                          Create Post
+                          Workout Assignment
                         </Anchor>
-
                         <Anchor
                           href="/admin"
                           weight={isActive("/admin") ? "bold" : "normal"}
@@ -150,17 +163,15 @@ const Layout: React.FC<Props> = (props) => {
                     <Anchor href="/api/auth/signin">Log in</Anchor>
                   )}
                   {session && (
-                    <>
-                      <UnstyledButton onClick={() => signOut()}>
-                        <Anchor>Log Out</Anchor>
-                      </UnstyledButton>
-                      <Avatar
-                        src={session?.user.image}
-                        radius="xl"
-                        alt="profile picture"
-                      />
-                    </>
+                    <UnstyledButton onClick={() => signOut()}>
+                      <Anchor>Log Out</Anchor>
+                    </UnstyledButton>
                   )}
+                  <Avatar
+                    src={session?.user.image}
+                    radius="xl"
+                    alt="profile picture"
+                  />
                 </Group>
               </Group>
             </MediaQuery>

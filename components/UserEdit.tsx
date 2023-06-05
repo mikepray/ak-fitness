@@ -2,27 +2,36 @@ import { Button, Card, Group, Stack, Switch, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { User } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { useGetEffect } from "../hooks/useGetEffect";
 
 type Props = {
   user: User;
 };
 export const UserEdit: React.FC<Props> = (props) => {
+  const { data: session } = useSession({ required: true });
+  const me = useGetEffect<User>("/api/user/me", [session]);
+  
   const userForm = useForm({
     initialValues: {
       id: props.user.id,
       name: props.user.name,
       email: props.user.email,
       isUserEnabled: props.user.isUserEnabled,
+      isGlobalAdmin: props.user.isGlobalAdmin,
     },
     validate: {
       name: (value: String) =>
         value.length > 0 ? null : "User name is required",
+      isGlobalAdmin: (value: boolean) => 
+        props.user.id === me.id && !value ? "You cannot demote yourself" : null
     },
   });
 
   const submitUserForm = async (formData: {
     name: string;
     isUserEnabled: boolean;
+    isGlobalAdmin: boolean;
   }) => {
     try {
       const response = await fetch(`/api/user/${props.user.id}`, {
@@ -31,6 +40,7 @@ export const UserEdit: React.FC<Props> = (props) => {
         body: JSON.stringify({
           name: formData.name,
           isUserEnabled: formData.isUserEnabled,
+          isGlobalAdmin: formData.isGlobalAdmin,
         }),
       });
 
@@ -73,6 +83,15 @@ export const UserEdit: React.FC<Props> = (props) => {
             offLabel="No"
             labelPosition="left"
             {...userForm.getInputProps("isUserEnabled", {
+              type: "checkbox",
+            })}
+          />
+           <Switch
+            label="User is Global Admin?"
+            onLabel="Yes"
+            offLabel="No"
+            labelPosition="left"
+            {...userForm.getInputProps("isGlobalAdmin", {
               type: "checkbox",
             })}
           />
