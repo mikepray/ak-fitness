@@ -3,15 +3,18 @@ import {
   Button,
   Checkbox,
   Group,
+  Loader,
   TextInput,
   Textarea,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useSession } from "next-auth/react";
 import Router from "next/router";
 import React from "react";
 
 const Draft: React.FC = () => {
+  const { status } = useSession({ required: true });
   const form = useForm({
     initialValues: {
       title: "",
@@ -52,6 +55,7 @@ const Draft: React.FC = () => {
 
   return (
     <>
+      {status === "loading" && <Loader />}
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
         <Title order={2}>New Post</Title>
         <TextInput

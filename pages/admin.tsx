@@ -52,15 +52,15 @@ type Props = {
   users: User[];
 };
 
-const Blog: React.FC<Props> = (props) => {
-  const { data: session, status } = useSession();
+const Admin: React.FC<Props> = (props) => {
+  const { data: session, status } = useSession({required: true});
   const me = useGetEffect<User>("/api/user/me", [session]);
 
   const workspaceForm = useForm({
     initialValues: {
-      workspaceName: props.workspace.name,
-      workspaceDescription: props.workspace.description,
-      canUsersRegister: props.workspace.canUsersRegister,
+      workspaceName: props.workspace?.name,
+      workspaceDescription: props.workspace?.description,
+      canUsersRegister: props.workspace?.canUsersRegister,
     },
     validate: {
       workspaceName: (value: String) =>
@@ -161,7 +161,7 @@ const Blog: React.FC<Props> = (props) => {
                 <Accordion.Control>Users</Accordion.Control>
                 <Accordion.Panel>
                   {props.users?.map((user) => (
-                    <UserEdit user={user} />
+                    <UserEdit user={user} key={user.email}/>
                   ))}
                 </Accordion.Panel>
               </Accordion.Item>
@@ -169,7 +169,7 @@ const Blog: React.FC<Props> = (props) => {
           </Stack>
         </>
       )}
-      {status !== "loading" && (!session || !me?.isGlobalAdmin) && (
+      {!me?.isGlobalAdmin && (
         <Alert
           icon={<IconAlertCircle size="1rem" />}
           color="red"
@@ -182,4 +182,4 @@ const Blog: React.FC<Props> = (props) => {
   );
 };
 
-export default Blog;
+export default Admin;

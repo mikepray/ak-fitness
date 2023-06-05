@@ -1,6 +1,6 @@
 // pages/drafts.tsx
 
-import { Alert, Box, Flex, Stack, Title } from "@mantine/core";
+import { Alert, Box, Flex, Loader, Stack, Title } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -38,25 +38,11 @@ type Props = {
 };
 
 const Drafts: React.FC<Props> = (props) => {
-  const { data: session, status } = useSession();
-
-  if (!session && status !== 'loading') {
-    return (
-      <>
-        <Title>Your Drafts</Title>
-        <Alert
-          icon={<IconAlertCircle size="1rem" />}
-          color="red"
-          variant="filled"
-        >
-          You need to be authenticated to view this page
-        </Alert>
-      </>
-    );
-  }
+ const { status } = useSession({required: true});
 
   return (
     <>
+    {status === "loading" && <Loader />}
       <Title p="md">Your Drafts</Title>
       <Stack spacing="md">
         {props.drafts.map((post) => (
