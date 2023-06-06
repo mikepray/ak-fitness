@@ -36,9 +36,9 @@ model User {
 model WorkoutUser {
   id        String  @id @default(cuid())
   workoutId String
-  workout   Workout @relation(fields: [workoutId], references: [id])
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   userId    String
-  user      User    @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Workout {
@@ -46,7 +46,7 @@ model Workout {
   name             String
   description      String?
   tags             String?
-  workoutExercises WorkoutExercise[]
+  workoutExercises WorkoutExercise[] 
   workoutUsers     WorkoutUser[]
 }
 

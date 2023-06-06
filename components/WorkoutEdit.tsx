@@ -132,7 +132,7 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
           />
         </Stack>
         <Group position="right" mt="md">
-          <Button color="red" onClick={() => deleteWorkout()}>
+          <Button color="red" variant="light" onClick={deleteWorkout}>
             Delete
           </Button>
           <Button type="submit">Update</Button>

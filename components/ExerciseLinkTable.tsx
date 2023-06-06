@@ -1,5 +1,4 @@
-import { Anchor, Button, Modal, Stack, Table } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Stack, Table } from "@mantine/core";
 import { Exercise } from "@prisma/client";
 import { useState } from "react";
 import { useGetEffect } from "../hooks/useGetEffect";
@@ -12,12 +11,31 @@ type Props = {
 };
 
 export const ExerciseLinkTable: React.FC<Props> = (props) => {
-  //   const { data: session, status } = useSession();
   const exercises = useGetEffect<Exercise[]>(`/api/exercise`, []);
-  const [opened, { open, close }] = useDisclosure(false);
   const [workoutExercises, setWorkoutExercises] = useState<
     NewWorkoutExercise[]
   >(props.initialWorkoutExercises ? props.initialWorkoutExercises : []);
+
+  const unLinkExercise = (key: string) => {
+    setWorkoutExercises(workoutExercises.filter((value) => value.key !== key));
+    props.onChange(workoutExercises.filter((value) => value.key !== key));
+  };
+  const linkExercise = (workoutExercise: NewWorkoutExercise) => {
+    setWorkoutExercises(workoutExercises.concat([workoutExercise]));
+    props.onChange(workoutExercises.concat([workoutExercise]));
+  };
+  const updateLinkedExercise = (workoutExercise: NewWorkoutExercise) => {
+    setWorkoutExercises(
+      workoutExercises.map((value) =>
+        value.key === workoutExercise.key ? workoutExercise : value
+      )
+    );
+    props.onChange(
+      workoutExercises.map((value) =>
+        value.key === workoutExercise.key ? workoutExercise : value
+      )
+    );
+  };
 
   const rows = workoutExercises.map((workoutExercise) => (
     <tr key={workoutExercise.key}>
@@ -31,37 +49,18 @@ export const ExerciseLinkTable: React.FC<Props> = (props) => {
       <td>{workoutExercise.reps}</td>
       <td>{workoutExercise.restSeconds}</td>
       <td>
-        <Anchor>Edit</Anchor> |{" "}
-        <Anchor
-          onClick={() => {
-            unLinkExercise(workoutExercise.key);
-          }}
-        >
-          Remove
-        </Anchor>
+        <WorkoutExerciseModal
+          exercises={exercises}
+          onEdit={updateLinkedExercise}
+          onRemove={unLinkExercise}
+          initialWorkoutExercise={workoutExercise}
+        />
       </td>
     </tr>
   ));
 
-  const unLinkExercise = (key: string) => {
-    setWorkoutExercises(workoutExercises.filter((value) => value.key !== key));
-    props.onChange(workoutExercises.filter((value) => value.key !== key));
-  };
-  const linkExercise = (workoutExercise: NewWorkoutExercise) => {
-    setWorkoutExercises(workoutExercises.concat([workoutExercise]));
-    props.onChange(workoutExercises.concat([workoutExercise]));
-  };
-
   return (
     <Stack>
-      <Modal opened={opened} onClose={close} title="Link an Exercise">
-        <WorkoutExerciseModal
-          exercises={exercises}
-          onSubmit={linkExercise}
-          close={close}
-        />
-      </Modal>
-
       <Table>
         <thead>
           <tr>
@@ -74,9 +73,7 @@ export const ExerciseLinkTable: React.FC<Props> = (props) => {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
-      <Button onClick={open} variant="default">
-        Add Exercise
-      </Button>
+      <WorkoutExerciseModal exercises={exercises} onAdd={linkExercise} />
     </Stack>
   );
 };

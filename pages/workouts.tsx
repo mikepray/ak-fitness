@@ -18,6 +18,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   }
 
   const workouts = await prisma.workout.findMany({
+    orderBy: { name: "desc"},
     include: {
       workoutExercises: true,
     },
