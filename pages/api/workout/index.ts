@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
 import { postAuthed } from "../../../lib/requestHandler";
 import { WorkoutExercise } from "@prisma/client";
+import { NewWorkoutExercise } from "../../../types/types";
 
 // POST /api/workout
 export default async function handle(
@@ -11,9 +12,9 @@ export default async function handle(
   res: NextApiResponse
 ) {
   postAuthed(req, res, true, async ({ req, res, }) => {
-    // exercises: [{exerciseId, sets, reps, restSeconds}]
     const { name, description, tags } = req.body;
-    const exercises: WorkoutExercise[] = req.body.exercises;
+    const newWorkoutExercises: NewWorkoutExercise[] = req.body.workoutExercises;
+    
     // create the workout
     const result = await prisma.workout.create({
       data: {
@@ -22,7 +23,14 @@ export default async function handle(
         tags: tags,
         workoutExercises: {
           createMany: {
-            data: exercises
+            data: newWorkoutExercises?.map((wE) => {
+              return {
+                exerciseId: wE.exerciseId,
+                sets: wE.sets,
+                reps: wE.reps,
+                restSeconds: wE.restSeconds,
+              }
+            })
           }
         }
       },

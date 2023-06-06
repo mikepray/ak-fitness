@@ -2,14 +2,7 @@ import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
 import { Exercise } from "@prisma/client";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-export type NewWorkoutExercise = {
-  key: string;
-  exerciseId: string;
-  sets: string;
-  reps: string;
-  restSeconds: string;
-};
+import { NewWorkoutExercise } from "../types/types";
 
 type Props = {
   exercises: Exercise[];

@@ -1,18 +1,47 @@
-import { Button, Card, Group, TextInput, Textarea } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Group,
+  Stack,
+  TextInput,
+  Textarea,
+  Title,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { Workout } from "@prisma/client";
+import { Workout, WorkoutExercise } from "@prisma/client";
 import Router from "next/router";
+import { ExerciseLinkTable } from "./ExerciseLinkTable";
+import { NewWorkoutExercise } from "../types/types";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
-  workout: Workout;
+  workout: Workout & { workoutExercises: WorkoutExercise[] };
 };
+
+type FormValues = {
+  name: string;
+  description: string;
+  tags: string;
+  workoutExercises: NewWorkoutExercise[];
+};
+
 export const WorkoutEdit: React.FC<Props> = (props) => {
-  const form = useForm({
+  const form = useForm<FormValues>({
     initialValues: {
       name: props.workout.name,
       description: props.workout.description,
       tags: props.workout.tags,
+      workoutExercises: props.workout.workoutExercises?.map((wE) => {
+        return {
+          key: uuidv4(),
+          workoutId: wE.workoutId,
+          exerciseId: wE.exerciseId,
+          sets: wE.sets,
+          reps: wE.reps,
+          restSeconds: wE.restSeconds,
+        };
+      }),
     },
     validate: {
       name: (value: String) => (value.length > 0 ? null : "Name is required"),
@@ -23,6 +52,7 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
     name: string;
     description: string;
     tags: string;
+    workoutExercises: NewWorkoutExercise[];
   }) => {
     try {
       const response = await fetch(`/api/workout/${props.workout.id}`, {
@@ -32,6 +62,7 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
           name: formData.name,
           description: formData.description,
           tags: formData.tags,
+          workoutExercises: formData.workoutExercises,
         }),
       });
       if (response.status === 200) {
@@ -66,6 +97,11 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
     Router.push("/workouts");
   };
 
+  const onExerciseTableChange = (workoutExercises: NewWorkoutExercise[]) => {
+    console.log("setting form workoutExercises to", workoutExercises);
+    form.setFieldValue("workoutExercises", workoutExercises);
+  };
+
   return (
     <Card mb={20}>
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
@@ -86,7 +122,14 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
           placeholder="Tags"
           {...form.getInputProps("tags")}
         />
+        <Stack mt="md">
+          <Title order={3}>Exercises</Title>
 
+          <ExerciseLinkTable
+            onChange={onExerciseTableChange}
+            initialWorkoutExercises={form.getInputProps("workoutExercises").value}
+          />
+        </Stack>
         <Group position="right" mt="md">
           <Button color="red" onClick={() => deleteWorkout()}>
             Delete

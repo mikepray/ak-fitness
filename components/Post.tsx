@@ -36,7 +36,11 @@ const Post: React.FC<{ post: PostProps; user: User }> = ({ post, user }) => {
       <Stack>
         <Group>
           <Text c="dimmed">By {authorName}</Text>
-          <Badge color={post.published ? "blue" : "gray"}>{post.published ? "Published" : "Unpublished"}</Badge>
+          {user?.isGlobalAdmin && (
+            <Badge color={post.published ? "blue" : "gray"}>
+              {post.published ? "Published" : "Unpublished"}
+            </Badge>
+          )}
         </Group>
         <ReactMarkdown children={post.content} />
       </Stack>

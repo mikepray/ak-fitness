@@ -43,7 +43,10 @@ const Exercises: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Title p="md">Exercises</Title>
+      <Group position="apart">
+        <Title p="md">Exercises</Title>
+        <Anchor href="/createExercise">Create Exercise</Anchor>
+      </Group>
       <Stack spacing="md">
         {props.exercises.map((exercise) => (
           <div key={exercise.id} className="exercise">
@@ -55,9 +58,6 @@ const Exercises: React.FC<Props> = (props) => {
             There are no exercises defined. Click Create Exercise to start
           </Alert>
         )}
-        <Group position="right">
-          <Anchor href="/createExercise">Create Exercise</Anchor>
-        </Group>
       </Stack>
     </>
   );

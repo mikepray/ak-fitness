@@ -19,14 +19,28 @@ export default async function handle(
 
 
   putAuthed(req, res, true, async ({ res, idQueryParam }) => {
-    const { name, description, tags, } = req.body;
-
+    const { name, description, tags, workoutExercises} = req.body;
+    await prisma.workoutExercise.deleteMany({
+      where: { workoutId: idQueryParam }
+    })
     const post = await prisma.workout.update({
       where: { id: idQueryParam },
       data: {
         name: name,
         description: description,
         tags: tags,
+        workoutExercises: {
+          createMany: {
+            data: workoutExercises?.map((wE) => {
+              return {
+                exerciseId: wE.exerciseId,
+                sets: wE.sets,
+                reps: wE.reps,
+                restSeconds: wE.restSeconds,
+              }
+            })
+          }
+        }
       }
     });
     res.json(post);

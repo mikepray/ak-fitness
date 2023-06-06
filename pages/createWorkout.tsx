@@ -1,27 +1,27 @@
 import {
   Button,
-  Checkbox,
   Group,
   Loader,
+  Stack,
   TextInput,
   Textarea,
-  Title,
-  Text,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Router from "next/router";
 import React from "react";
-import { useGetEffect } from "../hooks/useGetEffect";
-import { User } from "@prisma/client";
 import { AuthAdminRequired } from "../components/AuthAdminRequired";
-import { notifications } from "@mantine/notifications";
 import { ExerciseLinkTable } from "../components/ExerciseLinkTable";
-import { NewWorkoutExercise } from "../components/WorkoutExerciseModal";
+import { useGetEffect } from "../hooks/useGetEffect";
+import { NewWorkoutExercise } from "../types/types";
 
 const CreateWorkout: React.FC = () => {
   const { data: session, status } = useSession({ required: true });
   const me = useGetEffect<User>("/api/user/me", [session]);
+
   const form = useForm({
     initialValues: {
       name: "",
@@ -48,6 +48,7 @@ const CreateWorkout: React.FC = () => {
           name: formData.name,
           description: formData.description,
           tags: formData.tags,
+          workoutExercises: formData.workoutExercises,
         }),
       });
       if (response.status === 200) {
@@ -74,6 +75,11 @@ const CreateWorkout: React.FC = () => {
     return <AuthAdminRequired />;
   }
 
+  const onExerciseTableChange = (workoutExercises: NewWorkoutExercise[]) => {
+    console.log("setting form workoutExercises to", workoutExercises);
+    form.setFieldValue("workoutExercises", workoutExercises);
+  };
+
   return (
     <>
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
@@ -95,11 +101,12 @@ const CreateWorkout: React.FC = () => {
           placeholder="Tags"
           {...form.getInputProps("tags")}
         />
-        {/* TODO somehow pass workoutExercise form props downwards */}
 
-        <Text>Exercises</Text>
+        <Stack mt="md">
+          <Title order={3}>Exercises</Title>
 
-        <ExerciseLinkTable workoutExercises={[]} />
+          <ExerciseLinkTable onChange={onExerciseTableChange} />
+        </Stack>
         <Group position="right" mt="md">
           <Button type="submit">Create</Button>
         </Group>

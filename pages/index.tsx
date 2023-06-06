@@ -1,16 +1,15 @@
-import { Anchor, Group, Stack, Text, Title } from "@mantine/core";
+import { Anchor, Group, Stack, Text } from "@mantine/core";
+import { User } from "@prisma/client";
 import { GetStaticProps } from "next";
+import { useSession } from "next-auth/react";
 import React from "react";
 import Post, { PostProps } from "../components/Post";
-import prisma from "../lib/prisma";
-import { getServerSession } from "next-auth";
 import { useGetEffect } from "../hooks/useGetEffect";
-import { User } from "@prisma/client";
-import { useSession } from "next-auth/react";
+import prisma from "../lib/prisma";
 
 export const getStaticProps: GetStaticProps = async () => {
-
   const feed = await prisma.post.findMany({
+    where: { published: true },
     include: {
       author: {
         select: { name: true },
@@ -18,9 +17,8 @@ export const getStaticProps: GetStaticProps = async () => {
     },
   });
   const { name } = await prisma.workspaceConfig.findUnique({
-    where: { id: 0 }
-  })
-  console.log('name was', name)
+    where: { id: 0 },
+  });
   return {
     props: { feed, name },
     revalidate: 10,
@@ -38,6 +36,12 @@ const Blog: React.FC<Props> = (props) => {
 
   return (
     <>
+      {session && me?.isGlobalAdmin && (
+        <Group position="right">
+          <Anchor href="/create">Create Post</Anchor>
+        </Group>
+      )}
+
       <Stack spacing="md">
         {props.feed.map((post) => (
           <div key={post.id}>
@@ -47,9 +51,6 @@ const Blog: React.FC<Props> = (props) => {
         {props.feed.length === 0 && (
           <Text c="dimmed">There aren't any posts yet...</Text>
         )}
-        <Group position="right">
-          <Anchor href="/create">Create Post</Anchor>
-        </Group>
       </Stack>
     </>
   );
