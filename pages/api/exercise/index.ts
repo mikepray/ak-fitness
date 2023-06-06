@@ -2,7 +2,7 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
-import { postAuthed } from "../../../lib/requestHandler";
+import { getAuthed, postAuthed } from "../../../lib/requestHandler";
 
 // POST /api/post
 // Required fields in body: title
@@ -11,7 +11,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  postAuthed(req, res, true, async ({ req, res, }) => {
+  postAuthed(req, res, true, async ({ req, res }) => {
     const { name, description, tags, type, equipmentRequired } = req.body;
     const result = await prisma.exercise.create({
       data: {
@@ -22,6 +22,11 @@ export default async function handle(
         equipmentRequired: equipmentRequired,
       },
     });
+    res.json(result);
+  });
+
+  getAuthed(req, res, true, async ({ req, res }) => {
+    const result = await prisma.exercise.findMany();
     res.json(result);
   });
 }

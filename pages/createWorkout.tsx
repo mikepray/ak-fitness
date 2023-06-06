@@ -6,6 +6,7 @@ import {
   TextInput,
   Textarea,
   Title,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useSession } from "next-auth/react";
@@ -15,6 +16,8 @@ import { useGetEffect } from "../hooks/useGetEffect";
 import { User } from "@prisma/client";
 import { AuthAdminRequired } from "../components/AuthAdminRequired";
 import { notifications } from "@mantine/notifications";
+import { ExerciseLinkTable } from "../components/ExerciseLinkTable";
+import { NewWorkoutExercise } from "../components/WorkoutExerciseModal";
 
 const CreateWorkout: React.FC = () => {
   const { data: session, status } = useSession({ required: true });
@@ -24,6 +27,7 @@ const CreateWorkout: React.FC = () => {
       name: "",
       description: "",
       tags: "",
+      workoutExercises: [],
     },
     validate: {
       name: (value) => (value.length > 0 ? null : "Name is required"),
@@ -34,6 +38,7 @@ const CreateWorkout: React.FC = () => {
     name: string;
     description: string;
     tags: string;
+    workoutExercises: NewWorkoutExercise[];
   }) => {
     try {
       const response = await fetch("/api/workout", {
@@ -90,7 +95,11 @@ const CreateWorkout: React.FC = () => {
           placeholder="Tags"
           {...form.getInputProps("tags")}
         />
-        TODO link exercises
+        {/* TODO somehow pass workoutExercise form props downwards */}
+
+        <Text>Exercises</Text>
+
+        <ExerciseLinkTable workoutExercises={[]} />
         <Group position="right" mt="md">
           <Button type="submit">Create</Button>
         </Group>
