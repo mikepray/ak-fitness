@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Group,
+  Paper,
   Stack,
   TextInput,
   Textarea,
@@ -103,7 +104,7 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
   };
 
   return (
-    <Card mb={20}>
+    <Paper mb={20} p="md">
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
         <TextInput
           withAsterisk
@@ -137,6 +138,6 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
           <Button type="submit">Update</Button>
         </Group>
       </form>
-    </Card>
+    </Paper>
   );
 };

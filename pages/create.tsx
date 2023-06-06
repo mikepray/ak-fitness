@@ -3,6 +3,7 @@ import {
   Checkbox,
   Group,
   Loader,
+  Paper,
   TextInput,
   Textarea,
   Title,
@@ -64,28 +65,30 @@ const CreatePost: React.FC = () => {
     <>
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
         <Title order={2}>Create Post</Title>
-        <TextInput
-          withAsterisk
-          label="Title"
-          placeholder="Title"
-          {...form.getInputProps("title")}
-        />
-        <Textarea
-          label="Content"
-          placeholder="Content"
-          withAsterisk
-          minRows={10}
-          {...form.getInputProps("content")}
-        />
-        <Group mt="md">
-          <Checkbox
-            label="Immediately Publish?"
-            {...form.getInputProps("immediatelyPublish")}
+        <Paper p="md">
+          <TextInput
+            withAsterisk
+            label="Title"
+            placeholder="Title"
+            {...form.getInputProps("title")}
           />
-        </Group>
-        <Group position="right" mt="md">
-          <Button type="submit">Create</Button>
-        </Group>
+          <Textarea
+            label="Content"
+            placeholder="Content"
+            withAsterisk
+            minRows={10}
+            {...form.getInputProps("content")}
+          />
+          <Group mt="md">
+            <Checkbox
+              label="Immediately Publish?"
+              {...form.getInputProps("immediatelyPublish")}
+            />
+          </Group>
+          <Group position="right" mt="md">
+            <Button type="submit">Create</Button>
+          </Group>
+        </Paper>
       </form>
     </>
   );

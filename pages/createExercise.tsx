@@ -3,6 +3,7 @@ import {
   Checkbox,
   Group,
   Loader,
+  Paper,
   TextInput,
   Textarea,
   Title,
@@ -76,9 +77,9 @@ const CreateExercise: React.FC = () => {
   }
 
   return (
-    <>
-      <form onSubmit={form.onSubmit((values) => submitData(values))}>
-        <Title order={2}>New Exercise</Title>
+    <form onSubmit={form.onSubmit((values) => submitData(values))}>
+      <Title order={2}>New Exercise</Title>
+      <Paper p="md">
         <TextInput
           withAsterisk
           label="Name"
@@ -109,8 +110,8 @@ const CreateExercise: React.FC = () => {
         <Group position="right" mt="md">
           <Button type="submit">Create</Button>
         </Group>
-      </form>
-    </>
+      </Paper>
+    </form>
   );
 };
 

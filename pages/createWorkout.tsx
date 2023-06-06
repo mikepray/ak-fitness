@@ -2,10 +2,11 @@ import {
   Button,
   Group,
   Loader,
+  Paper,
   Stack,
   TextInput,
   Textarea,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -84,32 +85,34 @@ const CreateWorkout: React.FC = () => {
     <>
       <form onSubmit={form.onSubmit((values) => submitData(values))}>
         <Title order={2}>New Workout</Title>
-        <TextInput
-          withAsterisk
-          label="Name"
-          placeholder="Name"
-          {...form.getInputProps("name")}
-        />
-        <Textarea
-          label="Description"
-          placeholder="Description"
-          minRows={5}
-          {...form.getInputProps("description")}
-        />
-        <TextInput
-          label="Tags"
-          placeholder="Tags"
-          {...form.getInputProps("tags")}
-        />
+        <Paper p="md">
+          <TextInput
+            withAsterisk
+            label="Name"
+            placeholder="Name"
+            {...form.getInputProps("name")}
+          />
+          <Textarea
+            label="Description"
+            placeholder="Description"
+            minRows={5}
+            {...form.getInputProps("description")}
+          />
+          <TextInput
+            label="Tags"
+            placeholder="Tags"
+            {...form.getInputProps("tags")}
+          />
 
-        <Stack mt="md">
-          <Title order={3}>Exercises</Title>
+          <Stack mt="md">
+            <Title order={3}>Exercises</Title>
 
-          <ExerciseLinkTable onChange={onExerciseTableChange} />
-        </Stack>
-        <Group position="right" mt="md">
-          <Button type="submit">Create</Button>
-        </Group>
+            <ExerciseLinkTable onChange={onExerciseTableChange} />
+          </Stack>
+          <Group position="right" mt="md">
+            <Button type="submit">Create</Button>
+          </Group>
+        </Paper>
       </form>
     </>
   );

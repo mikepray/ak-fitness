@@ -1,4 +1,4 @@
-import { Anchor, Group, Stack, Text } from "@mantine/core";
+import { Anchor, Group, Stack, Text, Title } from "@mantine/core";
 import { User } from "@prisma/client";
 import { GetStaticProps } from "next";
 import { useSession } from "next-auth/react";
@@ -37,7 +37,9 @@ const Blog: React.FC<Props> = (props) => {
   return (
     <>
       {session && me?.isGlobalAdmin && (
-        <Group position="right">
+        <Group position="apart">
+          <Title p="md">Home</Title>
+
           <Anchor href="/create">Create Post</Anchor>
         </Group>
       )}

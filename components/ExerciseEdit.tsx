@@ -1,4 +1,4 @@
-import { Button, Card, Group, Stack, Switch, TextInput, Textarea, Title } from "@mantine/core";
+import { Button, Card, Group, Paper, Stack, Switch, TextInput, Textarea, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { Exercise, User } from "@prisma/client";
@@ -77,7 +77,7 @@ export const ExerciseEdit: React.FC<Props> = (props) => {
   };
 
   return (
-    <Card mb={20}>
+    <Paper mb={20} p="md">
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
         <TextInput
           withAsterisk
@@ -111,6 +111,6 @@ export const ExerciseEdit: React.FC<Props> = (props) => {
           <Button type="submit">Update</Button>
         </Group>
       </form>
-    </Card>
+    </Paper>
   );
 };

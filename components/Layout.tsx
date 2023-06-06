@@ -53,6 +53,12 @@ const Layout: React.FC<Props> = (props) => {
                 {session && me?.isGlobalAdmin && (
                   <>
                     <Anchor
+                      href="/drafts"
+                      weight={isActive("/drafts") ? "bold" : "normal"}
+                    >
+                      Drafts
+                    </Anchor>
+                    <Anchor
                       href="/exercises"
                       weight={isActive("/exercises") ? "bold" : "normal"}
                     >
@@ -126,6 +132,12 @@ const Layout: React.FC<Props> = (props) => {
                     </Anchor>
                     {session && me?.isGlobalAdmin && (
                       <>
+                        <Anchor
+                          href="/drafts"
+                          weight={isActive("/drafts") ? "bold" : "normal"}
+                        >
+                          Drafts
+                        </Anchor>
                         <Anchor
                           href="/exercises"
                           weight={isActive("/exercises") ? "bold" : "normal"}

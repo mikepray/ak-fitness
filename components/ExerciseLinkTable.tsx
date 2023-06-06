@@ -7,7 +7,7 @@ import { NewWorkoutExercise } from "../types/types";
 import WorkoutExerciseModal from "./WorkoutExerciseModal";
 
 type Props = {
-  initialWorkoutExercises: NewWorkoutExercise[];
+  initialWorkoutExercises?: NewWorkoutExercise[];
   onChange: (workoutExercises: NewWorkoutExercise[]) => void;
 };
 

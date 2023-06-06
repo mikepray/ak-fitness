@@ -1,6 +1,6 @@
 // pages/drafts.tsx
 
-import { Alert, Loader, Stack, Title } from "@mantine/core";
+import { Alert, Anchor, Group, Loader, Stack, Title } from "@mantine/core";
 import { User } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -49,10 +49,13 @@ const Drafts: React.FC<Props> = (props) => {
   if (!me.isGlobalAdmin) {
     return <AuthAdminRequired />;
   }
-  
+
   return (
     <>
-      <Title p="md">Your Drafts</Title>
+      <Group position="apart">
+        <Title p="md">Your Drafts</Title>
+        <Anchor href="/create">Create Post</Anchor>
+      </Group>
       <Stack spacing="md">
         {props.drafts.map((post) => (
           <div key={post.id} className="post">
