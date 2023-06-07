@@ -1,34 +1,18 @@
-import {
-  Alert,
-  Anchor,
-  Group,
-  Loader,
-  Paper,
-  Stack,
-  Table,
-  Text,
-  Title,
-} from "@mantine/core";
-import { User, Workout, WorkoutExercise, WorkoutUser } from "@prisma/client";
+import { Group, Loader, Stack, Text, Title } from "@mantine/core";
+import { User } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { AuthAdminRequired } from "../components/AuthAdminRequired";
+import { WorkoutUserAssignmentPanel } from "../components/WorkoutUser/WorkoutUserAssignmentPanel";
 import { useGetEffect } from "../hooks/useGetEffect";
 import prisma from "../lib/prisma";
-import { nextAuthOptions } from "./api/auth/[...nextauth]";
-import { WorkoutEdit } from "../components/WorkoutExercise/WorkoutEdit";
-import WorkoutUserAssignmentModal from "../components/WorkoutUser/WorkoutUserAssignmentModal";
 import {
   UserIncludingWorkoutUsers,
-  WorkoutUserLinkTable,
-} from "../components/WorkoutUser/WorkoutUserLinkTable";
-import { v4 as uuidv4 } from "uuid";
-import { useForm } from "@mantine/form";
-import { NewWorkoutUser, WorkoutIncludingWorkoutExercises } from "../types/types";
-import { notifications } from "@mantine/notifications";
-import { WorkoutUserAssignmentPanel } from "../components/WorkoutUser/WorkoutUserAssignmentPanel";
+  WorkoutIncludingWorkoutExercises,
+} from "../types/types";
+import { nextAuthOptions } from "./api/auth/[...nextauth]";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
@@ -62,7 +46,6 @@ const Workouts: React.FC<Props> = (props) => {
   const { data: session, status } = useSession({ required: true });
   const me = useGetEffect<User>("/api/user/me", [session]);
 
-
   if (status === "loading" || !session || !me) {
     return <Loader />;
   }
@@ -79,7 +62,11 @@ const Workouts: React.FC<Props> = (props) => {
       <Stack spacing="md">
         <Text>Build a workout plan by assigning workouts to users</Text>
         {props.users?.map((user: UserIncludingWorkoutUsers) => (
-          <WorkoutUserAssignmentPanel user={user} workouts={props.workouts} key={user.id} />
+          <WorkoutUserAssignmentPanel
+            user={user}
+            workouts={props.workouts}
+            key={user.id}
+          />
         ))}
       </Stack>
     </>

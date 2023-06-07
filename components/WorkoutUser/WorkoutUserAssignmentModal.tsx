@@ -29,6 +29,7 @@ type Props = {
   onRemove?: (key: string) => void;
   initialWorkoutUser?: NewWorkoutUser;
   user: UserIncludingWorkoutUsers;
+  readOnly?: boolean | false;
 };
 
 type FormProps = {
@@ -51,7 +52,7 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
   });
 
   // FIXME defect: reselecting workout does not change exercise link table.
-  // propsed fix: figure out nested form input properties, send to workout exercise link table as 
+  // propsed fix: figure out nested form input properties, send to workout exercise link table as
   // form property instead of managing state manually
 
   // const workoutExercisesForWorkout: NewWorkoutExercise[] = props.workouts
@@ -63,22 +64,25 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Link a Workout">
+      <Modal opened={opened} onClose={close} title="Workout">
         <Stack>
-          <Select
-            label="Find a Workout"
-            placeholder="Search"
-            searchable
-            nothingFound="No matching workouts..."
-            data={props.workouts?.map((workout) => {
-              return {
-                value: workout.id,
-                label: workout.name,
-                name: workout.name,
-              };
-            })}
-            {...form.getInputProps("workoutId")}
-          />
+          {!props.readOnly && (
+            <Select
+              label="Find a Workout"
+              placeholder="Search"
+              searchable
+              nothingFound="No matching workouts..."
+              data={props.workouts?.map((workout) => {
+                return {
+                  value: workout.id,
+                  label: workout.name,
+                  name: workout.name,
+                };
+              })}
+              {...form.getInputProps("workoutId")}
+              disabled={props.readOnly}
+            />
+          )}
 
           <Title order={5}>Selected Workout</Title>
           {form.values.workoutId && (
@@ -100,8 +104,7 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
               <WorkoutExerciseLinkTable
                 initialWorkoutExercises={props.workouts
                   .find((v) => v.id === form.values.workoutId)
-                  .workoutExercises
-                  ?.map((workoutExercise) => {
+                  .workoutExercises?.map((workoutExercise) => {
                     return { key: uuidv4(), ...workoutExercise };
                   })}
                 onChange={() => {}}
@@ -113,24 +116,26 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
             </>
           )}
           <Group position="right">
-            <Button
-              variant="filled"
-              onClick={() => {
-                close();
-                if (props.onEdit) {
-                  props.onEdit(form.values);
-                } else {
-                  form.reset();
-                  props.onAdd({
-                    key: uuidv4(),
-                    userId: form.values.userId,
-                    workoutId: form.values.workoutId,
-                  });
-                }
-              }}
-            >
-              Link
-            </Button>
+            {!props.readOnly && (
+              <Button
+                variant="filled"
+                onClick={() => {
+                  close();
+                  if (props.onEdit) {
+                    props.onEdit(form.values);
+                  } else {
+                    form.reset();
+                    props.onAdd({
+                      key: uuidv4(),
+                      userId: form.values.userId,
+                      workoutId: form.values.workoutId,
+                    });
+                  }
+                }}
+              >
+                Link
+              </Button>
+            )}
             <Button
               variant="default"
               onClick={() => {
@@ -138,12 +143,12 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
                 close();
               }}
             >
-              Cancel
+              {!props.readOnly ? "Cancel" : "Close"}
             </Button>
           </Group>
         </Stack>
       </Modal>
-      {props.onEdit && (
+      {!props.readOnly && props.onEdit && (
         <Group>
           <Anchor onClick={open}>Edit</Anchor> |
           <Anchor
@@ -155,8 +160,9 @@ const WorkoutUserAssignmentModal: React.FC<Props> = (props) => {
           </Anchor>
         </Group>
       )}
+      {props.readOnly && <Anchor onClick={open}>Details</Anchor>}
 
-      {props.onAdd && (
+      {!props.readOnly && props.onAdd && (
         <Button onClick={open} variant="default">
           Add Workout
         </Button>

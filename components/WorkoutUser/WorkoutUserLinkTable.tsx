@@ -1,8 +1,12 @@
-import { Button, Stack, Table } from "@mantine/core";
-import { Exercise, User, Workout, WorkoutExercise } from "@prisma/client";
+import { Stack, Table } from "@mantine/core";
+import { Exercise } from "@prisma/client";
 import { useState } from "react";
 import { useGetEffect } from "../../hooks/useGetEffect";
-import { NewWorkoutUser, UserIncludingWorkoutUsers, WorkoutIncludingWorkoutExercises } from "../../types/types";
+import {
+  NewWorkoutUser,
+  UserIncludingWorkoutUsers,
+  WorkoutIncludingWorkoutExercises,
+} from "../../types/types";
 import WorkoutUserAssignmentModal from "./WorkoutUserAssignmentModal";
 
 type Props = {
@@ -10,6 +14,7 @@ type Props = {
   workouts: WorkoutIncludingWorkoutExercises[];
   onChange: (workoutUser: NewWorkoutUser[]) => void;
   initialWorkoutUsers?: NewWorkoutUser[];
+  readOnly?: boolean | false;
 };
 
 export const WorkoutUserLinkTable: React.FC<Props> = (props) => {
@@ -46,16 +51,19 @@ export const WorkoutUserLinkTable: React.FC<Props> = (props) => {
     return (
       <tr key={workoutUser.key}>
         <td>{workout.name}</td>
-        <td>
-          <WorkoutUserAssignmentModal
-            exercises={exercises}
-            onEdit={updateLink}
-            onRemove={unLink}
-            initialWorkoutUser={workoutUser}
-            workouts={props.workouts}
-            user={props.user}
-          />
-        </td>
+        
+          <td>
+            <WorkoutUserAssignmentModal
+              exercises={exercises}
+              onEdit={updateLink}
+              onRemove={unLink}
+              initialWorkoutUser={workoutUser}
+              workouts={props.workouts}
+              user={props.user}
+              readOnly={props.readOnly}
+            />
+          </td>
+        
       </tr>
     );
   });
@@ -71,14 +79,16 @@ export const WorkoutUserLinkTable: React.FC<Props> = (props) => {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
-      <WorkoutUserAssignmentModal
-        exercises={exercises}
-        onAdd={link}
-        onRemove={unLink}
-        initialWorkoutUser={undefined}
-        workouts={props.workouts}
-        user={props.user}
-      />
+      {!props.readOnly && (
+        <WorkoutUserAssignmentModal
+          exercises={exercises}
+          onAdd={link}
+          onRemove={unLink}
+          initialWorkoutUser={undefined}
+          workouts={props.workouts}
+          user={props.user}
+        />
+      )}
     </Stack>
   );
 };
