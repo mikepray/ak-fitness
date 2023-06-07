@@ -90,7 +90,13 @@ const WorkoutExerciseModal: React.FC<Props> = (props) => {
             >
               Link
             </Button>
-            <Button variant="default" onClick={close}>
+            <Button
+              variant="default"
+              onClick={() => {
+                form.reset();
+                close();
+              }}
+            >
               Cancel
             </Button>
           </Group>

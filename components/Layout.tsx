@@ -22,6 +22,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { ReactNode, useState } from "react";
 import { useGetEffect } from "../hooks/useGetEffect";
+import Link from "next/link";
 
 type Props = {
   children: ReactNode;

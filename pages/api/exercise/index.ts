@@ -11,7 +11,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  postAuthed(req, res, true, async ({ req, res }) => {
+  await postAuthed(req, res, true, async () => {
     const { name, description, tags, type, equipmentRequired } = req.body;
     const result = await prisma.exercise.create({
       data: {
@@ -23,10 +23,12 @@ export default async function handle(
       },
     });
     res.json(result);
+    return Promise.resolve();
   });
 
-  getAuthed(req, res, true, async ({ req, res }) => {
+  await getAuthed(req, res, true, async () => {
     const result = await prisma.exercise.findMany();
     res.json(result);
+    return Promise.resolve();
   });
 }

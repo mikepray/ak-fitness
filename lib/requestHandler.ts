@@ -10,12 +10,10 @@ export type HandlerProperties = {
   method: string;
   requireSession: boolean;
   requireGlobalAdmin: boolean;
-  work: (props: CallbackProperties) => {};
+  work: (props: CallbackProperties) => Promise<void>;
 };
 
 export type CallbackProperties = {
-  req: NextApiRequest;
-  res: NextApiResponse;
   session?: Session;
   user?: User;
   idQueryParam: string;
@@ -24,9 +22,9 @@ export type CallbackProperties = {
 export async function get(
   req: NextApiRequest,
   res: NextApiResponse,
-  work: ({ req, res }: CallbackProperties) => {}
+  work: ({ }: CallbackProperties) => Promise<void>
 ) {
-  coolHandle({
+  await handle({
     req: req,
     res: res,
     method: "GET",
@@ -40,9 +38,9 @@ export async function getAuthed(
   req: NextApiRequest,
   res: NextApiResponse,
   requireGlobalAdmin: boolean | false,
-  work: ({ req, res, session, user }: CallbackProperties) => {}
+  work: ({ session, user }: CallbackProperties) => Promise<void>
 ) {
-  coolHandle({
+  await handle({
     req: req,
     res: res,
     method: "GET",
@@ -56,9 +54,9 @@ export async function postAuthed(
   req: NextApiRequest,
   res: NextApiResponse,  
     requireGlobalAdmin: boolean | false,
-  work: ({ req, res, session, user }: CallbackProperties) => {}
+  work: ({ session, user }: CallbackProperties) => Promise<void>
 ) {
-  coolHandle({
+  await handle({
     req: req,
     res: res,
     method: "POST",
@@ -72,9 +70,10 @@ export async function putAuthed(
   req: NextApiRequest,
   res: NextApiResponse,  
   requireGlobalAdmin: boolean | false,
-  work: ({ req, res, session, user }: CallbackProperties) => {}
+  work: ({ session, user }: CallbackProperties) => Promise<void>
 ) {
-  coolHandle({
+  console.log('in put request')
+  await handle({
     req: req,
     res: res,
     method: "PUT",
@@ -82,15 +81,16 @@ export async function putAuthed(
     requireGlobalAdmin: requireGlobalAdmin,
     work: work,
   });
+  console.log('done with put request')
 }
 
 export async function deleteAuthed(
   req: NextApiRequest,
   res: NextApiResponse,
   requireGlobalAdmin: boolean | false,
-  work: ({ req, res, session, user }: CallbackProperties) => {}
+  work: ({ session, user }: CallbackProperties) => Promise<void>
 ) {
-  return coolHandle({
+  await handle({
     req: req,
     res: res,
     method: "DELETE",
@@ -100,7 +100,7 @@ export async function deleteAuthed(
   });
 }
 
-export async function coolHandle(properties: HandlerProperties) {
+export async function handle(properties: HandlerProperties) {
   if (properties.req.method !== properties.method) {
     // properties.res.status(405).send("Method not allowed");
     return;
@@ -134,11 +134,10 @@ export async function coolHandle(properties: HandlerProperties) {
       if (properties.requireGlobalAdmin && !user.isGlobalAdmin) {
         properties.res.status(401)
         .send('{"error": "You lack the required authorization"}')
+        return;
       }
 
-      properties.work({
-        req: properties.req,
-        res: properties.res,
+       await properties.work({
         session: session,
         user: user,
         idQueryParam: properties.req.query?.id,
@@ -147,9 +146,7 @@ export async function coolHandle(properties: HandlerProperties) {
     }
   }
 
-  properties.work({
-    req: properties.req,
-    res: properties.res,
+  await properties.work({
     idQueryParam: properties.req.query?.id,
   });
 }

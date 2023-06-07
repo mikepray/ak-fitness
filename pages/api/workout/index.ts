@@ -11,7 +11,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  postAuthed(req, res, true, async ({ req, res, }) => {
+  await postAuthed(req, res, true, async () => {
     const { name, description, tags } = req.body;
     const newWorkoutExercises: NewWorkoutExercise[] = req.body.workoutExercises;
     

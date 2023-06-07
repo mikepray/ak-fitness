@@ -2,16 +2,8 @@ import { Button, Stack, Table } from "@mantine/core";
 import { Exercise, User, Workout, WorkoutExercise } from "@prisma/client";
 import { useState } from "react";
 import { useGetEffect } from "../../hooks/useGetEffect";
-import { NewWorkoutUser } from "../../types/types";
+import { NewWorkoutUser, UserIncludingWorkoutUsers, WorkoutIncludingWorkoutExercises } from "../../types/types";
 import WorkoutUserAssignmentModal from "./WorkoutUserAssignmentModal";
-
-type WorkoutIncludingWorkoutExercises = Workout & {
-  workoutExercises: WorkoutExercise[];
-};
-
-export type UserIncludingWorkoutUsers = User & {
-  workoutUsers: NewWorkoutUser[];
-};
 
 type Props = {
   user: UserIncludingWorkoutUsers;

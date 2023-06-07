@@ -10,7 +10,7 @@ export default async function handle(
   res: NextApiResponse
 ) {
 
-  get(req, res, async ({res}) => {
+  await get(req, res, async () => {
       const workspaceConfig = await prisma.workspaceConfig.findUniqueOrThrow({
         where: {
           id: 0

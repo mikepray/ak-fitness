@@ -9,7 +9,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  putAuthed(req, res, true, async ({ res, user }) => {
+  await putAuthed(req, res, true, async ({ user }) => {
     const { name, description, canUsersRegister } = req.body;
     const workspaceConfig = await prisma.workspaceConfig.update({
       where: {

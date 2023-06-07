@@ -1,15 +1,12 @@
-// pages/api/post/index.ts
-
 import { NextApiRequest, NextApiResponse } from "next";
-import { get, postAuthed, putAuthed } from "../../../lib/requestHandler";
 import prisma from "../../../lib/prisma";
+import { putAuthed } from "../../../lib/requestHandler";
 
-// PUT /api/workspace/
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  putAuthed(req, res, false, async ({ res, user, idQueryParam }) => {
+  await putAuthed(req, res, false, async ({ user, idQueryParam }) => {
     // only global admins can enable/disable users
     if (user.isGlobalAdmin) {
       const { name, isUserEnabled, isGlobalAdmin } = req.body;
@@ -23,7 +20,7 @@ export default async function handle(
           isGlobalAdmin: isGlobalAdmin,
         },
       });
-      res.json(user);
+      res.status(200).json(user);
     } else {
       res.send(401);
     }
@@ -38,7 +35,7 @@ export default async function handle(
           name: name,
         },
       });
-      res.json(user);
+      res.status(200).json(user);
     } else {
       res.send(401);
     }

@@ -9,7 +9,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  deleteAuthed(req, res, true, async ({ res, idQueryParam }) => {
+  await deleteAuthed(req, res, true, async ({ idQueryParam }) => {
     const post = await prisma.post.delete({
       where: { id: idQueryParam },
     });

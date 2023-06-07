@@ -11,7 +11,7 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  putAuthed(req, res, true, async ({res, idQueryParam}) => {
+  await putAuthed(req, res, true, async ({idQueryParam}) => {
     const post = await prisma.post.update({
       where: { id: idQueryParam },
       data: { published: false },

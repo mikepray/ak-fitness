@@ -4,12 +4,10 @@ import { notifications } from "@mantine/notifications";
 import { v4 as uuidv4 } from "uuid";
 import {
   NewWorkoutUser,
+  UserIncludingWorkoutUsers,
   WorkoutIncludingWorkoutExercises,
 } from "../../types/types";
-import {
-  UserIncludingWorkoutUsers,
-  WorkoutUserLinkTable,
-} from "./WorkoutUserLinkTable";
+import { WorkoutUserLinkTable } from "./WorkoutUserLinkTable";
 
 type Props = {
   user: UserIncludingWorkoutUsers;
@@ -35,7 +33,7 @@ export const WorkoutUserAssignmentPanel: React.FC<Props> = (props) => {
 
   const submitForm = async (formData: FormValues) => {
     try {
-      const response = await fetch(`/api/workoutUsers`, {
+      const response = await fetch(`/api/workoutUser/${props.user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
