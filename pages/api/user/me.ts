@@ -7,6 +7,6 @@ export default async function handle(
   res: NextApiResponse
 ) {
   getAuthed(req, res, false, async ({ res, user }) => {
-    res.json(user);
+    return res.json(user);
   });
 }

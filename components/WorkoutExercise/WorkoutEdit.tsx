@@ -2,19 +2,22 @@ import {
   Button,
   Card,
   Group,
+  Modal,
   Paper,
   Stack,
   TextInput,
   Textarea,
   Title,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { Workout, WorkoutExercise } from "@prisma/client";
 import Router from "next/router";
-import { ExerciseLinkTable } from "./ExerciseLinkTable";
-import { NewWorkoutExercise } from "../types/types";
+import { WorkoutExerciseLinkTable } from "./WorkoutExerciseLinkTable";
+import { NewWorkoutExercise } from "../../types/types";
 import { v4 as uuidv4 } from "uuid";
+import { useDisclosure } from "@mantine/hooks";
 
 type Props = {
   workout: Workout & { workoutExercises: WorkoutExercise[] };
@@ -28,6 +31,7 @@ type FormValues = {
 };
 
 export const WorkoutEdit: React.FC<Props> = (props) => {
+  const [opened, { open, close }] = useDisclosure(false);
   const form = useForm<FormValues>({
     initialValues: {
       name: props.workout.name,
@@ -99,7 +103,6 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
   };
 
   const onExerciseTableChange = (workoutExercises: NewWorkoutExercise[]) => {
-    console.log("setting form workoutExercises to", workoutExercises);
     form.setFieldValue("workoutExercises", workoutExercises);
   };
 
@@ -126,13 +129,27 @@ export const WorkoutEdit: React.FC<Props> = (props) => {
         <Stack mt="md">
           <Title order={3}>Exercises</Title>
 
-          <ExerciseLinkTable
+          <WorkoutExerciseLinkTable
             onChange={onExerciseTableChange}
-            initialWorkoutExercises={form.getInputProps("workoutExercises").value}
+            initialWorkoutExercises={
+              form.getInputProps("workoutExercises").value
+            }
           />
         </Stack>
+        <Modal opened={opened} onClose={close} title="Confirm Delete">
+          <Stack>
+            <Text>Are you sure you want to delete this workout?</Text>
+            <Group position="right">
+              <Button color="red" onClick={deleteWorkout}>
+                Delete
+              </Button>
+              <Button onClick={close}>Cancel</Button>
+            </Group>
+          </Stack>
+        </Modal>
+
         <Group position="right" mt="md">
-          <Button color="red" variant="light" onClick={deleteWorkout}>
+          <Button color="red" variant="light" onClick={open}>
             Delete
           </Button>
           <Button type="submit">Update</Button>

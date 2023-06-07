@@ -71,12 +71,12 @@ const Layout: React.FC<Props> = (props) => {
                       Workouts
                     </Anchor>
                     <Anchor
-                      href="/workoutAssignment"
+                      href="/workoutAssignments"
                       weight={
-                        isActive("/workoutAssignment") ? "bold" : "normal"
+                        isActive("/workoutAssignments") ? "bold" : "normal"
                       }
                     >
-                      Workout Assignment
+                      Workout Assignments
                     </Anchor>
                     <Anchor
                       href="/admin"
@@ -151,9 +151,9 @@ const Layout: React.FC<Props> = (props) => {
                           Workouts
                         </Anchor>
                         <Anchor
-                          href="/workoutAssignment"
+                          href="/workoutAssignments"
                           weight={
-                            isActive("/workoutAssignment") ? "bold" : "normal"
+                            isActive("/workoutAssignments") ? "bold" : "normal"
                           }
                         >
                           Workout Assignment

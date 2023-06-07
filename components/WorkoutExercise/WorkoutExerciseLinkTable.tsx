@@ -1,16 +1,17 @@
 import { Stack, Table } from "@mantine/core";
 import { Exercise } from "@prisma/client";
 import { useState } from "react";
-import { useGetEffect } from "../hooks/useGetEffect";
-import { NewWorkoutExercise } from "../types/types";
+import { useGetEffect } from "../../hooks/useGetEffect";
+import { NewWorkoutExercise } from "../../types/types";
 import WorkoutExerciseModal from "./WorkoutExerciseModal";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   initialWorkoutExercises?: NewWorkoutExercise[];
   onChange: (workoutExercises: NewWorkoutExercise[]) => void;
 };
 
-export const ExerciseLinkTable: React.FC<Props> = (props) => {
+export const WorkoutExerciseLinkTable: React.FC<Props> = (props) => {
   const exercises = useGetEffect<Exercise[]>(`/api/exercise`, []);
   const [workoutExercises, setWorkoutExercises] = useState<
     NewWorkoutExercise[]
@@ -73,7 +74,7 @@ export const ExerciseLinkTable: React.FC<Props> = (props) => {
         </thead>
         <tbody>{rows}</tbody>
       </Table>
-      <WorkoutExerciseModal exercises={exercises} onAdd={linkExercise} />
+      <WorkoutExerciseModal exercises={exercises} onAdd={linkExercise} initialWorkoutExercise={undefined} />
     </Stack>
   );
 };

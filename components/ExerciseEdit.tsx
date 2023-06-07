@@ -107,7 +107,7 @@ export const ExerciseEdit: React.FC<Props> = (props) => {
           {...form.getInputProps("equipmentRequired")}
         />
         <Group position="right" mt="md">
-          <Button color="red" onClick={() => deleteExercise()}>Delete</Button>
+          <Button color="red" variant="light" onClick={() => deleteExercise()}>Delete</Button>
           <Button type="submit">Update</Button>
         </Group>
       </form>

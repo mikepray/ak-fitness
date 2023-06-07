@@ -8,10 +8,10 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { Exercise } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
-import { NewWorkoutExercise } from "../types/types";
-import { useDisclosure } from "@mantine/hooks";
+import { NewWorkoutExercise } from "../../types/types";
 
 type Props = {
   exercises: Exercise[];
@@ -77,8 +77,15 @@ const WorkoutExerciseModal: React.FC<Props> = (props) => {
                 if (props.onEdit) {
                   props.onEdit(form.values);
                 } else {
-                  props.onAdd(form.values);
-                };
+                  form.reset();
+                  props.onAdd({
+                    key: uuidv4(),
+                    exerciseId: form.values.exerciseId,
+                    sets: form.values.sets,
+                    reps: form.values.reps,
+                    restSeconds: form.values.restSeconds,
+                  });
+                }
               }}
             >
               Link

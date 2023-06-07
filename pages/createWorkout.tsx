@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 import Router from "next/router";
 import React from "react";
 import { AuthAdminRequired } from "../components/AuthAdminRequired";
-import { ExerciseLinkTable } from "../components/ExerciseLinkTable";
+import { WorkoutExerciseLinkTable } from "../components/WorkoutExercise/WorkoutExerciseLinkTable";
 import { useGetEffect } from "../hooks/useGetEffect";
 import { NewWorkoutExercise } from "../types/types";
 
@@ -107,7 +107,7 @@ const CreateWorkout: React.FC = () => {
           <Stack mt="md">
             <Title order={3}>Exercises</Title>
 
-            <ExerciseLinkTable onChange={onExerciseTableChange} />
+            <WorkoutExerciseLinkTable onChange={onExerciseTableChange} />
           </Stack>
           <Group position="right" mt="md">
             <Button type="submit">Create</Button>

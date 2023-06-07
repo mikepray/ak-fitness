@@ -90,7 +90,7 @@ export async function deleteAuthed(
   requireGlobalAdmin: boolean | false,
   work: ({ req, res, session, user }: CallbackProperties) => {}
 ) {
-  coolHandle({
+  return coolHandle({
     req: req,
     res: res,
     method: "DELETE",

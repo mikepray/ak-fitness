@@ -1,5 +1,15 @@
-import { Alert, Anchor, Group, Loader, Stack, Title } from "@mantine/core";
-import { User, Workout, WorkoutExercise } from "@prisma/client";
+import {
+  Alert,
+  Anchor,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
+import { User, Workout, WorkoutExercise, WorkoutUser } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -9,6 +19,16 @@ import { useGetEffect } from "../hooks/useGetEffect";
 import prisma from "../lib/prisma";
 import { nextAuthOptions } from "./api/auth/[...nextauth]";
 import { WorkoutEdit } from "../components/WorkoutExercise/WorkoutEdit";
+import WorkoutUserAssignmentModal from "../components/WorkoutUser/WorkoutUserAssignmentModal";
+import {
+  UserIncludingWorkoutUsers,
+  WorkoutUserLinkTable,
+} from "../components/WorkoutUser/WorkoutUserLinkTable";
+import { v4 as uuidv4 } from "uuid";
+import { useForm } from "@mantine/form";
+import { NewWorkoutUser, WorkoutIncludingWorkoutExercises } from "../types/types";
+import { notifications } from "@mantine/notifications";
+import { WorkoutUserAssignmentPanel } from "../components/WorkoutUser/WorkoutUserAssignmentPanel";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, nextAuthOptions);
@@ -17,24 +37,31 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: { exercises: [] } };
   }
 
+  const users = await prisma.user.findMany({
+    where: { isUserEnabled: true },
+    include: { workoutUsers: true },
+  });
+
   const workouts = await prisma.workout.findMany({
-    orderBy: { name: "desc"},
+    orderBy: { name: "desc" },
     include: {
       workoutExercises: true,
     },
   });
   return {
-    props: { workouts },
+    props: { workouts, users },
   };
 };
 
 type Props = {
-  workouts: Workout & { workoutExercises: WorkoutExercise[] }[];
+  workouts: WorkoutIncludingWorkoutExercises[];
+  users: UserIncludingWorkoutUsers[];
 };
 
 const Workouts: React.FC<Props> = (props) => {
   const { data: session, status } = useSession({ required: true });
   const me = useGetEffect<User>("/api/user/me", [session]);
+
 
   if (status === "loading" || !session || !me) {
     return <Loader />;
@@ -47,22 +74,13 @@ const Workouts: React.FC<Props> = (props) => {
   return (
     <>
       <Group position="apart">
-      <Title p="md">Workouts</Title>
-        <Anchor href="/createWorkout">Create Workout</Anchor>
+        <Title p="md">Workout Assignments</Title>
       </Group>
       <Stack spacing="md">
-        {props.workouts.map(
-          (workout: Workout & { workoutExercises: WorkoutExercise[] }) => (
-            <div key={workout.id} className="workout">
-              <WorkoutEdit workout={workout} />
-            </div>
-          )
-        )}
-        {props.workouts.length === 0 && (
-          <Alert color="blue" variant="light">
-            There are no workouts defined. Click Create Workout to start
-          </Alert>
-        )}
+        <Text>Build a workout plan by assigning workouts to users</Text>
+        {props.users?.map((user: UserIncludingWorkoutUsers) => (
+          <WorkoutUserAssignmentPanel user={user} workouts={props.workouts} key={user.id} />
+        ))}
       </Stack>
     </>
   );
